@@ -3,23 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GenAI en Computer Vision — Analyse Comparative S8</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<title>Analyse Approfondie de la GenAI en Computer Vision — Rapport S8</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --surface2: #1c1c27;
-    --border: #2a2a3a;
-    --text: #e8e8f0;
-    --muted: #7a7a9a;
-    --accent1: #7c6aff;
-    --accent2: #ff6a9b;
-    --accent3: #6affd4;
-    --accent4: #ffd96a;
-    --gan: #ff6a9b;
-    --vae: #7c6aff;
-    --diff: #6affd4;
+    --bg: #050508;
+    --surface: #0f0f15;
+    --surface2: #161620;
+    --border: #232330;
+    --text: #ececf3;
+    --muted: #8e8ea8;
+    --accent-v: #7c6aff; /* VAE */
+    --accent-g: #ff6a9b; /* GAN */
+    --accent-d: #6affd4; /* Diffusion */
+    --accent-w: #ffd96a; /* Warning/Warning */
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,178 +25,289 @@
     background: var(--bg);
     color: var(--text);
     font-family: 'DM Sans', sans-serif;
-    font-size: 17px;
-    line-height: 1.75;
-    overflow-x: hidden;
+    font-size: 16px;
+    line-height: 1.8;
   }
 
-  /* Overlay de grain pour texture pro */
+  /* Effet de grain professionnel */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
     pointer-events: none;
-    z-index: 9999;
-    opacity: .3;
+    z-index: 1000;
   }
 
+  /* Barre de navigation */
   nav {
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 100;
-    padding: 1rem 2rem;
+    padding: 1.2rem 3rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgba(10,10,15,.85);
-    backdrop-filter: blur(12px);
+    background: rgba(5, 5, 8, 0.8);
+    backdrop-filter: blur(15px);
     border-bottom: 1px solid var(--border);
   }
-  nav .logo { font-family: 'Syne', sans-serif; font-weight: 800; background: linear-gradient(135deg, var(--accent1), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  nav ul { display: flex; gap: 1.5rem; list-style: none; }
-  nav a { color: var(--muted); text-decoration: none; font-size: .85rem; font-weight: 500; text-transform: uppercase; transition: color .2s; }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; background: linear-gradient(90deg, var(--accent-v), var(--accent-g)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  nav ul { display: flex; gap: 2rem; list-style: none; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; transition: 0.3s; }
   nav a:hover { color: var(--text); }
 
-  .hero { min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8rem 2rem; position: relative; }
-  .hero-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(124,106,255,.1) 0%, transparent 70%); }
-  .hero h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1.1; z-index: 1; }
-  .hero-sub { max-width: 700px; color: var(--muted); margin-top: 1.5rem; z-index: 1; }
+  /* Hero Section */
+  .hero {
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 100px 20px;
+    background: radial-gradient(circle at 50% 50%, rgba(124, 106, 255, 0.08) 0%, transparent 60%);
+  }
+  .hero-tag { font-size: 0.75rem; font-weight: 700; color: var(--accent-v); text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 1rem; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2.5rem, 8vw, 5rem); line-height: 1; letter-spacing: -0.04em; margin-bottom: 1.5rem; }
+  .hero-p { max-width: 800px; color: var(--muted); font-size: 1.2rem; margin-bottom: 3rem; font-weight: 300; }
 
-  section { padding: 5rem 2rem; max-width: 950px; margin: 0 auto; }
-  .section-tag { font-size: .75rem; font-weight: 700; color: var(--accent1); text-transform: uppercase; margin-bottom: 1rem; }
-  h2 { font-family: 'Syne', sans-serif; font-size: 2.2rem; margin-bottom: 1.5rem; }
+  /* Sections */
+  section { padding: 80px 10%; max-width: 1400px; margin: 0 auto; }
+  .section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-v); margin-bottom: 1rem; display: block; }
+  h2 { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; margin-bottom: 2rem; letter-spacing: -0.02em; }
+  h3 { font-family: 'Syne', sans-serif; font-size: 1.8rem; margin: 2rem 0 1rem; }
+  
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 40px 0; }
+  @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
 
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; margin-bottom: 3rem; }
-  .eli5-box { background: rgba(106,255,212,.05); border-left: 4px solid var(--accent3); padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; }
-  .eli5-box strong { color: var(--accent3); display: block; margin-bottom: .5rem; font-family: 'Syne', sans-serif; text-transform: uppercase; font-size: 0.8rem; }
+  /* Cards techniques */
+  .tech-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+  .tech-card:hover { transform: translateY(-5px); border-color: var(--muted); }
+  
+  .math-block {
+    background: #000;
+    padding: 1.5rem;
+    border-radius: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--accent-d);
+    margin: 1.5rem 0;
+    border: 1px solid var(--surface2);
+  }
 
-  table { width: 100%; border-collapse: collapse; margin-top: 2rem; border-radius: 12px; overflow: hidden; }
-  th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
-  th { background: var(--surface2); color: var(--accent4); font-family: 'Syne', sans-serif; font-size: 0.9rem; }
+  /* ELI5 Analogies */
+  .eli5 {
+    background: var(--surface2);
+    border-left: 4px solid var(--accent-d);
+    padding: 2rem;
+    border-radius: 0 16px 16px 0;
+    margin: 2rem 0;
+  }
+  .eli5 strong { color: var(--accent-d); font-family: 'Syne', sans-serif; text-transform: uppercase; font-size: 0.8rem; display: block; margin-bottom: 0.5rem; }
 
-  footer { text-align: center; padding: 4rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.9rem; }
-  .hl { color: var(--accent1); font-weight: 600; }
+  /* Table */
+  .table-container { overflow-x: auto; margin: 4rem 0; border: 1px solid var(--border); border-radius: 20px; }
+  table { width: 100%; border-collapse: collapse; background: var(--surface); }
+  th { background: var(--surface2); padding: 1.5rem; text-align: left; font-family: 'Syne', sans-serif; text-transform: uppercase; font-size: 0.8rem; color: var(--muted); }
+  td { padding: 1.5rem; border-top: 1px solid var(--border); vertical-align: top; }
+  tr:hover { background: rgba(255,255,255,0.02); }
+
+  .footer { border-top: 1px solid var(--border); padding: 5rem 10%; text-align: center; color: var(--muted); }
+  
+  /* Highlight types */
+  .hl-g { color: var(--accent-g); font-weight: 600; }
+  .hl-v { color: var(--accent-v); font-weight: 600; }
+  .hl-d { color: var(--accent-d); font-weight: 600; }
+
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="logo">VisionGen AI</div>
+  <div class="nav-logo">ELI5_GEN_VISION</div>
   <ul>
     <li><a href="#intro">Introduction</a></li>
     <li><a href="#architectures">Architectures</a></li>
-    <li><a href="#synthese">Synthèse</a></li>
+    <li><a href="#deep-dive">Analyse Mathématique</a></li>
+    <li><a href="#comparison">Synthèse Comparative</a></li>
   </ul>
 </nav>
 
-<div class="hero">
-  <div class="hero-bg"></div>
-  <div class="section-tag">Projet de Fin de Module — S8</div>
-  <h1>Modélisation Générative en <br><span style="color:var(--accent1)">Computer Vision</span></h1>
-  <p class="hero-sub">Une exploration académique des architectures GAN, VAE et Modèles de Diffusion : du fondement probabiliste à la synthèse visuelle.</p>
-</div>
+<header class="hero">
+  <span class="hero-tag">Rapport Technique — Computer Vision S8</span>
+  <h1>L'Art de la<br><span style="color:var(--accent-v)">Génération Visuelle</span></h1>
+  <p class="hero-p">Une étude comparative approfondie des paradigmes génératifs modernes : des fondements variationnels aux modèles de diffusion.</p>
+  <div style="display: flex; gap: 1rem;">
+    <div style="padding: 0.5rem 1.5rem; border: 1px solid var(--accent-g); border-radius: 99px; color: var(--accent-g); font-size: 0.8rem; font-weight: 700;">GAN</div>
+    <div style="padding: 0.5rem 1.5rem; border: 1px solid var(--accent-v); border-radius: 99px; color: var(--accent-v); font-size: 0.8rem; font-weight: 700;">VAE</div>
+    <div style="padding: 0.5rem 1.5rem; border: 1px solid var(--accent-d); border-radius: 99px; color: var(--accent-d); font-size: 0.8rem; font-weight: 700;">DIFFUSION</div>
+  </div>
+</header>
 
 <section id="intro">
-  <div class="section-tag">01 — Contexte & Enjeux</div>
-  <h2>Au-delà de la Perception Discriminative</h2>
-  <p>Traditionnellement, la vision par ordinateur s'est illustrée par ses capacités <strong>discriminatives</strong> (p(y|x)) : classifier, détecter ou segmenter. Cependant, l'émergence de la <strong>GenAI</strong> (IA Générative) marque un tournant vers la modélisation de la distribution des données elle-même (p(x)).</p>
-  
-  <p>L'enjeu n'est plus seulement de comprendre le contenu d'une image, mais d'apprendre les lois statistiques qui permettent de la recréer. Cette approche est fondamentale pour la <strong>Data Augmentation</strong>, la <strong>restauration d'images</strong> ou encore l'évaluation de la <strong>robustesse des systèmes biométriques</strong>.</p>
-
-  <div class="eli5-box">
-    <strong>Approche ELI5 (Vulgarisation)</strong>
-    Un modèle discriminatif est un juge : il regarde une photo et décide s'il s'agit d'un chat. Un modèle génératif est un artiste : il a observé tellement de chats qu'il peut désormais en peindre un nouveau, unique, sur une toile vierge.
+  <span class="section-label">// 01. Contextualisation</span>
+  <h2>Pourquoi la GenAI en Vision ?</h2>
+  <div class="grid-2">
+    <div>
+      <p>La vision par ordinateur a longtemps été limitée à la <strong>perception passive</strong>. Les réseaux de neurones classiques (CNN) étaient entraînés pour réduire une image complexe en une étiquette simple (Classification) ou une boîte englobante (Détection). C'est ce qu'on appelle l'apprentissage <em>discriminatif</em>.</p>
+      <p style="margin-top: 1rem;">Cependant, l'intelligence artificielle moderne cherche désormais à <strong>modéliser le monde</strong>. Apprendre à générer une image réaliste n'est pas qu'un exercice artistique ; c'est la preuve ultime qu'un modèle a compris la distribution statistique sous-jacente des données (le concept de "chat", de "visage" ou de "tumeur médicale").</p>
+    </div>
+    <div class="eli5">
+      <strong>Analogie ELI5</strong>
+      <p>Imaginez un élève en cours d'art. Le modèle <strong>discriminatif</strong> est celui qui sait reconnaître un Picasso parmi mille tableaux. Le modèle <strong>génératif</strong> est celui qui est capable de prendre un pinceau et de peindre un nouveau tableau <em>dans le style</em> de Picasso. Le second demande une compréhension bien plus profonde des formes, des couleurs et des textures.</p>
+    </div>
   </div>
 </section>
 
 <section id="architectures">
-  <div class="section-tag">02 — Analyse des Architectures</div>
+  <span class="section-label">// 02. Les Piliers Architecturaux</span>
+  <h2>Analyse des Paradigmes</h2>
 
-  <div class="card">
-    <h3 style="color:var(--gan); font-family:'Syne'; margin-bottom:1rem;">I. GAN (Generative Adversarial Networks)</h3>
-    <p>Introduits par <em>Goodfellow et al. (2014)</em>, les GANs reposent sur une théorie des jeux à somme nulle. Deux réseaux sont mis en compétition :</p>
-    <ul style="margin: 1rem 2rem; color: var(--muted);">
-      <li><strong>Le Générateur (G) :</strong> Synthétise des données à partir d'un bruit latent.</li>
-      <li><strong>Le Discriminateur (D) :</strong> Tente de distinguer les données réelles des données synthétiques.</li>
-    </ul>
-    <p>L'équilibre de Nash est atteint lorsque le discriminateur ne peut plus distinguer le vrai du faux (probabilité 0.5).</p>
+  <div class="tech-card" style="margin-bottom: 4rem;">
+    <h3 class="hl-g">I. GAN : Generative Adversarial Networks</h3>
+    <p>Proposés par Ian Goodfellow en 2014, les GANs ont révolutionné le domaine par leur approche basée sur la <strong>théorie des jeux</strong>.</p>
     
-    <div class="eli5-box">
-      <strong>Analogie :</strong> C'est le duel entre un faussaire et un expert de la banque centrale. À chaque erreur détectée, le faussaire s'améliore, forçant l'expert à devenir plus pointu, jusqu'à ce que les faux billets soient parfaits.
+    <div class="grid-2">
+      <div>
+        <h4 style="margin-bottom: 0.5rem;">Structure Bi-partite :</h4>
+        <ul>
+          <li><strong>Le Générateur (G) :</strong> Un réseau qui transforme un vecteur de bruit aléatoire (z) en une image synthétique.</li>
+          <li><strong>Le Discriminateur (D) :</strong> Un classifieur qui tente de distinguer si une image provient du dataset réel ou du générateur.</li>
+        </ul>
+        <div class="math-block">
+          min_G max_D V(D, G) = E[log D(x)] + E[log(1 - D(G(z)))]
+        </div>
+      </div>
+      <div>
+        <p>L'entraînement est un <strong>équilibre de Nash</strong> : G s'améliore pour tromper D, et D s'améliore pour ne plus se faire tromper. À la fin, G produit des images si réalistes que D a une chance sur deux (0.5) de se tromper.</p>
+        <div class="eli5" style="border-left-color: var(--accent-g);">
+          <strong>Analogie</strong>
+          Un faussaire (G) fabrique des faux billets et un policier (D) tente de les détecter. La compétition pousse le faussaire à atteindre une perfection indécelable.
+        </div>
+      </div>
     </div>
+    
   </div>
 
-  <div class="card">
-    <h3 style="color:var(--vae); font-family:'Syne'; margin-bottom:1rem;">II. VAE (Variational Autoencoders)</h3>
-    <p>Les VAEs (Kingma & Welling, 2013) adoptent une approche probabiliste rigoureuse. Contrairement aux auto-encodeurs classiques, ils encodent l'entrée dans une <strong>distribution de probabilité</strong> (souvent Gaussienne) au sein de l'espace latent.</p>
-    <p>Cette régularisation de l'espace latent permet une génération fluide et structurée, bien que les résultats puissent présenter un certain "flou" par rapport aux GANs.</p>
+  <div class="tech-card" style="margin-bottom: 4rem;">
+    <h3 class="hl-v">II. VAE : Variational Autoencoders</h3>
+    <p>Contrairement aux GANs, les VAEs reposent sur une approche <strong>probabiliste et statistique</strong> solide (Inférence Bayésienne).</p>
     
-    <div class="eli5-box">
-      <strong>Analogie :</strong> C'est un traducteur qui résume un livre complexe en quelques mots-clés essentiels (compression), puis demande à un écrivain de réécrire une histoire entière à partir de ces simples notes.
+    <div class="grid-2">
+      <div>
+        <p>Un VAE ne compresse pas une image en un point fixe, mais en une <strong>distribution de probabilité</strong> (moyenne μ et variance σ). Cela garantit que l'espace latent est continu et régulier.</p>
+        <h4 style="margin-top: 1rem;">La perte ELBO :</h4>
+        <div class="math-block">
+          Loss = ||x - x'||^2 + KL[q(z|x) || p(z)]
+        </div>
+        <p style="font-size: 0.8rem; color: var(--muted);">Divergence de Kullback-Leibler pour la régularisation.</p>
+      </div>
+      <div>
+        <div class="eli5" style="border-left-color: var(--accent-v);">
+          <strong>Analogie</strong>
+          C'est comme un traducteur qui doit résumer un livre (Encodeur) en quelques mots-clés, puis un écrivain (Décodeur) qui doit réécrire le livre à partir de ces notes. Comme les notes sont vagues, l'écrivain peut créer des variantes légèrement différentes à chaque fois.
+        </div>
+      </div>
     </div>
+    
   </div>
 
-  <div class="card">
-    <h3 style="color:var(--diff); font-family:'Syne'; margin-bottom:1rem;">III. Modèles de Diffusion</h3>
-    <p>Représentant l'état de l'art actuel (SOTA), ces modèles s'inspirent de la thermodynamique. Le processus consiste à ajouter du bruit gaussien à une image jusqu'à la détruire, puis à apprendre au réseau à <strong>inverser ce processus</strong> étape par étape.</p>
-    <p>Ils surpassent aujourd'hui les GANs en termes de diversité et de fidélité des images générées.</p>
+  <div class="tech-card">
+    <h3 class="hl-d">III. Modèles de Diffusion (SOTA)</h3>
+    <p>Inspirés par la thermodynamique, ils représentent l'état de l'art actuel (DALL-E 3, Midjourney).</p>
     
-    <div class="eli5-box">
-      <strong>Analogie :</strong> Imaginez une sculpture de glace qui fond lentement. Le modèle regarde la flaque d'eau et, par magie, réussit à reconstruire la statue de glace originale en remontant le temps.
+    <div class="grid-2">
+      <div>
+        <h4 style="margin-bottom: 0.5rem;">Le processus :</h4>
+        <ol style="margin-left: 1.5rem; color: var(--muted);">
+          <li><strong>Forward Diffusion :</strong> On ajoute progressivement du bruit à une image jusqu'à ce qu'elle devienne un bruit blanc pur.</li>
+          <li><strong>Reverse Diffusion :</strong> Le modèle apprend à <em>retirer</em> ce bruit étape par étape pour reconstruire l'image originale.</li>
+        </ol>
+      </div>
+      <div>
+        <p>C'est un processus itératif long mais extrêmement puissant qui permet une finesse de détails inégalée par les GANs ou les VAEs.</p>
+        <div class="eli5" style="border-left-color: var(--accent-d);">
+          <strong>Analogie</strong>
+          Imaginez une sculpture de glace qui fond complètement. Le modèle est un magicien capable de regarder la flaque d'eau et de reconstruire la sculpture originale en inversant le temps.
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+<section id="deep-dive">
+  <span class="section-label">// 03. Analyse Critique & Enjeux</span>
+  <h2>Pourquoi est-ce crucial pour nous ?</h2>
+  <p>Dans notre cursus S8, nous avons étudié le <strong>Face Anti-Spoofing (FAS)</strong>. La GenAI est l'arme à double tranchant de ce domaine :</p>
+  
+  <div class="grid-2">
+    <div class="tech-card" style="padding: 2rem; border-color: var(--accent-g);">
+      <h4 class="hl-g">La Menace : Deepfakes</h4>
+      <p style="font-size: 0.9rem;">Les GANs (comme StyleGAN) peuvent générer des visages synthétiques si parfaits qu'ils contournent les systèmes biométriques classiques. Comprendre la génération est la première étape pour construire une détection robuste.</p>
+    </div>
+    <div class="tech-card" style="padding: 2rem; border-color: var(--accent-d);">
+      <h4 class="hl-d">La Solution : Data Augmentation</h4>
+      <p style="font-size: 0.9rem;">Grâce aux modèles de Diffusion, nous pouvons générer des milliers d'exemples d'attaques rares (images médicales pathologiques ou spoofing spécifique) pour mieux entraîner nos modèles discriminatifs (comme le Swin Transformer).</p>
     </div>
   </div>
 </section>
 
-<section id="synthese">
-  <div class="section-tag">03 — Synthèse Comparative</div>
-  <h2>Analyse Critique</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Critère</th>
-        <th>GAN</th>
-        <th>VAE</th>
-        <th>Diffusion</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>Qualité Visuelle</strong></td>
-        <td>Excellente (Nette)</td>
-        <td>Moyenne (Floue)</td>
-        <td>État de l'art (Réaliste)</td>
-      </tr>
-      <tr>
-        <td><strong>Stabilité</strong></td>
-        <td>Instable (Mode Collapse)</td>
-        <td>Très stable</td>
-        <td>Stable</td>
-      </tr>
-      <tr>
-        <td><strong>Vitesse d'Inférence</strong></td>
-        <td>Très Rapide</td>
-        <td>Très Rapide</td>
-        <td>Lente (Itérative)</td>
-      </tr>
-      <tr>
-        <td><strong>Espace Latent</strong></td>
-        <td>Non structuré</td>
-        <td>Continu & Régulier</td>
-        <td>Complexe</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div style="margin-top: 3rem;">
-    <p>En conclusion, le choix de l'architecture dépend des contraintes du projet. Pour la <strong>biométrie et la sécurité</strong> (comme vu dans nos études sur le <em>Face Anti-Spoofing</em>), les modèles génératifs offrent des perspectives majeures pour simuler des attaques et renforcer la robustesse des réseaux de neurones face à des données imprévues.</p>
+<section id="comparison">
+  <span class="section-label">// 04. Synthèse Comparative</span>
+  <h2>Tableau Récapitulatif</h2>
+  
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Modèle</th>
+          <th>Principe Clé</th>
+          <th>Points Forts (Pros)</th>
+          <th>Faiblesses (Cons)</th>
+          <th>Usage Typique</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="hl-g">GAN</td>
+          <td>Compétition Adversariale</td>
+          <td>Images très nettes, génération instantanée.</td>
+          <td>Instabilité (Mode Collapse), difficile à entraîner.</td>
+          <td>Transfert de style, Deepfakes.</td>
+        </tr>
+        <tr>
+          <td class="hl-v">VAE</td>
+          <td>Inférence Variationnelle</td>
+          <td>Espace latent mathématiquement structuré, stable.</td>
+          <td>Images souvent floues (Blurry output).</td>
+          <td>Compression de données, détection d'anomalies.</td>
+        </tr>
+        <tr>
+          <td class="hl-d">Diffusion</td>
+          <td>Dénoising Itératif</td>
+          <td>Qualité SOTA, diversité immense.</td>
+          <td>Très lent à l'inférence (nécessite beaucoup de GPU).</td>
+          <td>Art IA, Inpainting de haute qualité.</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
-<footer>
-  <p>Projet Computer Vision & GenAI — ENSIASD 2026</p>
-  <p style="font-size: 0.7rem; margin-top: 1rem;">Réalisé par l'équipe : Firdaouss, Maryame, Yanis-Fadel & Collaborateurs.</p>
-</footer>
+<div class="footer">
+  <p>Projet réalisé par l'équipe <strong>Swin_Vision</strong> Kouma Lassana</p>
+  <p style="font-size: 0.7rem; margin-top: 1rem; color: #444;">© 2026 | Computer Vision & Generative AI | Prof. B. SAAD</p>
+</div>
 
 </body>
 </html>
