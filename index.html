@@ -3,360 +3,335 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Computer Vision & Generative AI — Rapport S8</title>
+<title>Generative AI en Computer Vision — ELI5 Blog</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root{
-  --bg:#050508;
-  --surface:#0f0f15;
-  --surface2:#161620;
-  --border:#232330;
-  --text:#ececf3;
-  --muted:#8e8ea8;
-  --v:#7c6aff;
-  --g:#ff6a9b;
-  --d:#6affd4;
+  --bg:#0b0c10;
+  --card:#111217;
+  --text:#eaeaf0;
+  --muted:#9ca3af;
+  --accent:#6c63ff;
+  --border:#1f2230;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;}
 body{
+  margin:0;
+  font-family:Inter;
   background:var(--bg);
   color:var(--text);
-  font-family:'DM Sans',sans-serif;
   line-height:1.7;
 }
 
-nav{
-  position:fixed;top:0;left:0;right:0;
-  padding:1rem 2rem;
-  background:rgba(5,5,8,0.85);
-  backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  z-index:1000;
-}
-
-.nav-logo{
-  font-family:'Syne';
-  font-weight:800;
-  color:var(--v);
-}
-
-nav a{
-  color:var(--muted);
-  margin-left:1rem;
-  text-decoration:none;
-  font-size:0.8rem;
-}
-
-.hero{
-  min-height:90vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  text-align:center;
-  padding:120px 20px;
-}
-
-.hero h1{
-  font-family:'Syne';
-  font-size:3rem;
-}
-
 section{
-  padding:80px 12%;
-  max-width:1200px;
+  padding:80px 10%;
+  max-width:1100px;
   margin:auto;
 }
 
+h1,h2,h3{
+  font-weight:700;
+}
+
+h1{
+  font-size:3rem;
+}
+
 h2{
-  font-family:'Syne';
-  margin-bottom:1rem;
+  font-size:2.2rem;
+  margin-bottom:20px;
 }
 
-h3{
-  margin-top:1.5rem;
-  margin-bottom:0.5rem;
-}
-
-.tech-card{
-  background:var(--surface);
+.card{
+  background:var(--card);
+  padding:25px;
+  border-radius:15px;
   border:1px solid var(--border);
-  padding:2rem;
-  border-radius:16px;
-  margin:2rem 0;
-}
-
-.math-block{
-  background:#000;
-  padding:1rem;
-  font-family:'JetBrains Mono';
-  color:var(--d);
-  margin:1rem 0;
-  border-left:3px solid var(--d);
+  margin-top:20px;
 }
 
 .eli5{
-  background:var(--surface2);
-  padding:1.5rem;
-  border-left:3px solid var(--v);
-  margin-top:1rem;
-}
-
-.schema{
-  margin-top:1rem;
-  padding:1rem;
-  border:1px dashed var(--muted);
-  color:var(--muted);
+  border-left:4px solid var(--accent);
+  padding:15px;
+  background:#151622;
+  margin-top:15px;
 }
 
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:2rem;
+  gap:25px;
 }
 
-@media(max-width:900px){
+@media(max-width:800px){
   .grid{grid-template-columns:1fr;}
 }
 
-.hl-v{color:var(--v);}
-.hl-g{color:var(--g);}
-.hl-d{color:var(--d);}
+.diagram{
+  background:#000;
+  padding:20px;
+  border-radius:10px;
+  text-align:center;
+  margin-top:15px;
+  font-family:monospace;
+  color:#6affd4;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:30px;
+}
+
+td,th{
+  border:1px solid var(--border);
+  padding:15px;
+}
+
+th{
+  background:#151622;
+}
+
+.hero{
+  text-align:center;
+  padding:100px 20px;
+}
+
+.hero p{
+  color:var(--muted);
+  max-width:700px;
+  margin:auto;
+}
+
 </style>
 </head>
 
 <body>
 
-<nav>
-  <div class="nav-logo">CV & GenAI — S8</div>
-  <div>
-    <a href="#intro">Intro</a>
-    <a href="#fundations">Fondations</a>
-    <a href="#features">Features</a>
-    <a href="#cnn">CNN</a>
-    <a href="#genai">GenAI</a>
-    <a href="#comparison">Comparaison</a>
-  </div>
-</nav>
-
-<header class="hero">
-  <h1>Computer Vision & Generative AI</h1>
-  <p>Rapport académique — Analyse des modèles de perception et génération visuelle</p>
-</header>
-
-<!-- INTRO -->
-<section id="intro">
-<h2>1. Introduction</h2>
-
-<p>
-La Computer Vision vise à transformer une image (matrice de pixels) en information sémantique exploitable.
-Les approches modernes reposent sur trois étapes : extraction de caractéristiques, représentation, et prédiction.
-</p>
-
-<div class="math-block">
-Image ∈ ℝ^(H × W × C)
+<div class="hero">
+<h1>Generative AI en Computer Vision</h1>
+<p>Une explication simple, visuelle et pédagogique des modèles GAN, VAE et Diffusion (ELI5)</p>
 </div>
 
-<div class="schema">
-📌 Schéma à insérer : Pipeline global Vision (Image → Features → Model → Output)
-</div>
+<!-- 1. QUOI -->
+<section>
+<h2>1. C’est quoi le Generative AI en Computer Vision ?</h2>
 
-</section>
-
-<!-- FONDATIONS -->
-<section id="fundations">
-<h2>2. Fondations de la vision artificielle</h2>
-
-<div class="tech-card">
-<h3>Problème central</h3>
+<div class="card">
 <p>
-Une image brute contient uniquement des valeurs numériques.
-Le défi est de construire une représentation robuste invariant aux transformations (rotation, échelle, illumination).
+Le <strong>Generative AI</strong> en vision par ordinateur est une branche de l’intelligence artificielle qui permet aux machines de <strong>créer de nouvelles images</strong> à partir de ce qu’elles ont appris.
 </p>
 
 <div class="eli5">
-Analogie : une image est un puzzle de pixels. Le modèle doit comprendre l’image complète à partir des pièces.
-</div>
-</div>
-
-</section>
-
-<!-- FEATURES -->
-<section id="features">
-<h2>3. Feature Engineering (pré-deep learning)</h2>
-
-<div class="grid">
-
-<div class="tech-card">
-<h3 class="hl-v">SIFT</h3>
-<p>Détection de points clés invariants aux transformations.</p>
-
-<p><b>Étapes :</b></p>
-<ul>
-<li>Détection de keypoints</li>
-<li>Description locale</li>
-<li>Vecteur de signature</li>
-</ul>
-
-<div class="schema">
-📌 Schéma SIFT : Keypoints → Patch → Descripteur
-</div>
+<strong>ELI5 :</strong><br>
+C’est comme un enfant qui regarde beaucoup de dessins… puis devient capable de dessiner lui-même un nouveau dessin.
 </div>
 
-<div class="tech-card">
-<h3 class="hl-d">HOG</h3>
-<p>Représentation basée sur les gradients d’intensité.</p>
-
-<p><b>Principe :</b> distribution des orientations des bords.</p>
-
-<div class="schema">
-📌 Schéma HOG : Image → Gradients → Histogrammes
-</div>
-</div>
-
-</div>
-</section>
-
-<!-- CNN -->
-<section id="cnn">
-<h2>4. CNN (Convolutional Neural Networks)</h2>
-
-<div class="tech-card">
-<h3>Principe</h3>
 <p>
-Les CNN apprennent automatiquement des représentations hiérarchiques :
-bords → textures → objets.
+Contrairement aux modèles classiques (classification), ici l’IA ne se contente pas de reconnaître une image… elle apprend à <strong>reproduire le monde visuel</strong>.
 </p>
 
-<div class="math-block">
-Feature map = Image * Kernel
+<div class="diagram">
+Entrée : bruit aléatoire → IA → Image générée
 </div>
+
+</div>
+</section>
+
+<!-- 2. POURQUOI -->
+<section>
+<h2>2. Pourquoi utiliser Generative AI ?</h2>
 
 <div class="grid">
 
-<div>
-<h3>Composants</h3>
+<div class="card">
+<h3>Création de données</h3>
+<p>Générer des images quand on n’a pas assez de données.</p>
+
+<div class="eli5">
+Comme inventer des exemples pour mieux apprendre.
+</div>
+</div>
+
+<div class="card">
+<h3>Deepfakes & cinéma</h3>
+<p>Créer des visages réalistes, effets spéciaux, avatars.</p>
+</div>
+
+<div class="card">
+<h3>Médecine</h3>
+<p>Simuler des cas rares pour entraîner les modèles.</p>
+</div>
+
+<div class="card">
+<h3>Art & design</h3>
+<p>Créer des œuvres automatiquement.</p>
+</div>
+
+</div>
+</section>
+
+<!-- 3. ARCHITECTURES -->
+<section>
+<h2>3. Architectures principales (ELI5)</h2>
+
+<!-- GAN -->
+<div class="card">
+<h3>GAN (Generative Adversarial Network)</h3>
+
+<p>
+Deux réseaux se battent :
+</p>
+
 <ul>
-<li>Convolution</li>
-<li>ReLU</li>
-<li>Pooling</li>
-<li>Fully Connected</li>
+<li>Générateur → crée des images</li>
+<li>Discriminateur → juge si c’est vrai ou faux</li>
 </ul>
+
+<div class="diagram">
+Générateur → image fake → Discriminateur → vrai/faux
 </div>
 
 <div class="eli5">
-Analogie : un CNN est un système de filtres successifs qui simplifient progressivement une image complexe.
+Un faussaire vs un policier.  
+Le faussaire devient de plus en plus fort.
 </div>
+
+<h4>Avantages</h4>
+<ul>
+<li>Images très réalistes</li>
+<li>Rapide à générer</li>
+</ul>
+
+<h4>Limites</h4>
+<ul>
+<li>Difficile à entraîner</li>
+<li>Peut générer toujours la même chose (mode collapse)</li>
+</ul>
 
 </div>
 
-<div class="schema">
-📌 Schéma CNN : Input → Conv → ReLU → Pool → Dense
+<!-- VAE -->
+<div class="card">
+<h3>VAE (Variational AutoEncoder)</h3>
+
+<p>
+Encode → compresse → Decode → reconstruit
+</p>
+
+<div class="diagram">
+Image → Encodeur → espace latent → Décodeur → Image
 </div>
 
+<div class="eli5">
+C’est comme résumer un livre puis le réécrire.
 </div>
+
+<h4>Avantages</h4>
+<ul>
+<li>Stable</li>
+<li>Compréhension mathématique claire</li>
+</ul>
+
+<h4>Limites</h4>
+<ul>
+<li>Images floues</li>
+</ul>
+
+</div>
+
+<!-- DIFFUSION -->
+<div class="card">
+<h3>Diffusion Models</h3>
+
+<p>
+On ajoute du bruit puis on apprend à l’enlever.
+</p>
+
+<div class="diagram">
+Image → bruit → bruit total → IA → image reconstruite
+</div>
+
+<div class="eli5">
+Comme salir une photo puis apprendre à la nettoyer.
+</div>
+
+<h4>Avantages</h4>
+<ul>
+<li>Très haute qualité</li>
+<li>Résultats modernes (DALL-E, etc.)</li>
+</ul>
+
+<h4>Limites</h4>
+<ul>
+<li>Lent</li>
+<li>Coûteux en calcul</li>
+</ul>
+
+</div>
+
 </section>
 
-<!-- GEN AI -->
-<section id="genai">
-<h2>5. Generative AI en Vision</h2>
+<!-- 4. COMPARAISON -->
+<section>
+<h2>4. Comparaison simple</h2>
 
-<div class="tech-card">
-
-<h3 class="hl-g">GAN</h3>
-<p>Modèle basé sur une compétition entre générateur et discriminateur.</p>
-
-<div class="math-block">
-min_G max_D V(D,G)
-</div>
-
-<div class="schema">📌 Schéma GAN</div>
-
-</div>
-
-<div class="tech-card">
-
-<h3 class="hl-v">VAE</h3>
-<p>Modèle probabiliste basé sur un espace latent régularisé.</p>
-
-<div class="math-block">
-Loss = reconstruction + KL divergence
-</div>
-
-<div class="schema">📌 Schéma VAE</div>
-
-</div>
-
-<div class="tech-card">
-
-<h3 class="hl-d">Diffusion Models</h3>
-<p>Processus de débruitage progressif.</p>
-
-<div class="schema">📌 Schéma Diffusion (forward / reverse)</div>
-
-</div>
-
-</section>
-
-<!-- COMPARISON -->
-<section id="comparison">
-<h2>6. Comparaison des modèles</h2>
-
-<div class="tech-card">
-
-<table style="width:100%;color:var(--text);border-collapse:collapse;">
+<table>
 <tr>
 <th>Modèle</th>
-<th>Principe</th>
-<th>Forces</th>
+<th>Idée</th>
+<th>Avantages</th>
 <th>Limites</th>
 </tr>
 
 <tr>
 <td>GAN</td>
-<td>Adversarial learning</td>
+<td>Compétition</td>
 <td>Images réalistes</td>
-<td>Instabilité</td>
+<td>Instable</td>
 </tr>
 
 <tr>
 <td>VAE</td>
-<td>Probabiliste</td>
-<td>Espace structuré</td>
+<td>Compression</td>
+<td>Stable</td>
 <td>Flou</td>
 </tr>
 
 <tr>
 <td>Diffusion</td>
-<td>Denoising</td>
-<td>SOTA qualité</td>
+<td>Bruit → nettoyage</td>
+<td>Qualité SOTA</td>
 <td>Lent</td>
 </tr>
 
 </table>
 
-</div>
-
 </section>
 
-<!-- CONCLUSION -->
+<!-- Conclusion -->
 <section>
-<h2>7. Conclusion</h2>
+<h2>Conclusion</h2>
 
+<div class="card">
 <p>
-La Computer Vision moderne repose sur l’évolution des représentations :
-de l’ingénierie manuelle (SIFT/HOG) vers l’apprentissage profond (CNN),
-et aujourd’hui vers les modèles génératifs (GAN, VAE, Diffusion).
+Le Generative AI est une révolution en Computer Vision.  
+Chaque modèle a ses forces :
 </p>
 
-<p>
-Les modèles génératifs permettent non seulement de comprendre les données,
-mais aussi de modéliser leur distribution complète.
-</p>
+<ul>
+<li>GAN → rapide et réaliste</li>
+<li>VAE → stable et structuré</li>
+<li>Diffusion → meilleure qualité actuelle</li>
+</ul>
+
+<div class="eli5">
+Il n’y a pas un meilleur modèle… seulement le bon outil selon le problème.
+</div>
+
+</div>
 
 </section>
 
