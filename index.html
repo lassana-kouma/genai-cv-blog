@@ -3,149 +3,362 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Architecture & Deep Dive : GenAI en Computer Vision</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Computer Vision & Generative AI — Rapport S8</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
 <style>
-  :root {
-    --bg: #050508;
-    --surface: #0f0f15;
-    --surface2: #161620;
-    --border: #232330;
-    --text: #ececf3;
-    --muted: #8e8ea8;
-    --accent-v: #7c6aff;
-    --accent-g: #ff6a9b;
-    --accent-d: #6affd4;
-  }
+:root{
+  --bg:#050508;
+  --surface:#0f0f15;
+  --surface2:#161620;
+  --border:#232330;
+  --text:#ececf3;
+  --muted:#8e8ea8;
+  --v:#7c6aff;
+  --g:#ff6a9b;
+  --d:#6affd4;
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.8; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  line-height:1.7;
+}
 
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    padding: 1.2rem 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: rgba(5, 5, 8, 0.85);
-    backdrop-filter: blur(15px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; background: linear-gradient(90deg, var(--accent-v), var(--accent-g)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  
-  header { min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 100px 20px; }
-  
-  section { padding: 60px 10%; max-width: 1300px; margin: 0 auto; }
-  h2 { font-family: 'Syne', sans-serif; font-size: 2.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
-  
-  .diagram-container {
-    background: #000;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    margin: 2.5rem 0;
-    padding: 2rem;
-    text-align: center;
-  }
-  .diagram-placeholder {
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.9rem;
-    border: 1px dashed #444;
-    padding: 4rem 2rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    background: rgba(255,255,255,0.02);
-  }
+nav{
+  position:fixed;top:0;left:0;right:0;
+  padding:1rem 2rem;
+  background:rgba(5,5,8,0.85);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  z-index:1000;
+}
 
-  .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
-  @media (max-width: 1000px) { .tech-grid { grid-template-columns: 1fr; } }
+.nav-logo{
+  font-family:'Syne';
+  font-weight:800;
+  color:var(--v);
+}
 
-  .math-box { font-family: 'JetBrains Mono', monospace; background: #1a1a25; padding: 1.2rem; border-radius: 8px; font-size: 0.85rem; color: var(--accent-d); border: 1px solid var(--surface2); }
-  
-  .footer { padding: 4rem; text-align: center; color: var(--muted); border-top: 1px solid var(--border); }
+nav a{
+  color:var(--muted);
+  margin-left:1rem;
+  text-decoration:none;
+  font-size:0.8rem;
+}
+
+.hero{
+  min-height:90vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  text-align:center;
+  padding:120px 20px;
+}
+
+.hero h1{
+  font-family:'Syne';
+  font-size:3rem;
+}
+
+section{
+  padding:80px 12%;
+  max-width:1200px;
+  margin:auto;
+}
+
+h2{
+  font-family:'Syne';
+  margin-bottom:1rem;
+}
+
+h3{
+  margin-top:1.5rem;
+  margin-bottom:0.5rem;
+}
+
+.tech-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:2rem;
+  border-radius:16px;
+  margin:2rem 0;
+}
+
+.math-block{
+  background:#000;
+  padding:1rem;
+  font-family:'JetBrains Mono';
+  color:var(--d);
+  margin:1rem 0;
+  border-left:3px solid var(--d);
+}
+
+.eli5{
+  background:var(--surface2);
+  padding:1.5rem;
+  border-left:3px solid var(--v);
+  margin-top:1rem;
+}
+
+.schema{
+  margin-top:1rem;
+  padding:1rem;
+  border:1px dashed var(--muted);
+  color:var(--muted);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:2rem;
+}
+
+@media(max-width:900px){
+  .grid{grid-template-columns:1fr;}
+}
+
+.hl-v{color:var(--v);}
+.hl-g{color:var(--g);}
+.hl-d{color:var(--d);}
 </style>
 </head>
+
 <body>
 
 <nav>
-  <div class="nav-logo">GEN_VISION_S8</div>
-  <div style="font-size: 0.8rem; color: var(--muted);">PROJET FIN DE MODULE</div>
+  <div class="nav-logo">CV & GenAI — S8</div>
+  <div>
+    <a href="#intro">Intro</a>
+    <a href="#fundations">Fondations</a>
+    <a href="#features">Features</a>
+    <a href="#cnn">CNN</a>
+    <a href="#genai">GenAI</a>
+    <a href="#comparison">Comparaison</a>
+  </div>
 </nav>
 
-<header>
-  <h1 style="font-family:'Syne'; font-size: 4rem;">Schématisation des <br><span style="color:var(--accent-g)">Modèles Génératifs</span></h1>
-  <p style="max-width: 600px; margin-top: 1rem; color: var(--muted);">Visualiser l'architecture interne des réseaux pour mieux comprendre la synthèse de données en Computer Vision.</p>
+<header class="hero">
+  <h1>Computer Vision & Generative AI</h1>
+  <p>Rapport académique — Analyse des modèles de perception et génération visuelle</p>
 </header>
 
-<section id="gan-schema">
-  <h2>01. Architecture Adversariale (GAN)</h2>
-  <div class="tech-grid">
-    <div>
-      <p>L'architecture GAN repose sur un système de feedback constant. Le <strong>Générateur</strong> ne voit jamais les vraies images ; il n'apprend que par les "reproches" du <strong>Discriminateur</strong> via la rétropropagation du gradient.</p>
-      <div class="math-box" style="margin-top:1.5rem;">
-        // Objective Function<br>
-        L = E[log D(x)] + E[log(1 - D(G(z)))]
-      </div>
-    </div>
-    <div class="diagram-container">
-      <div class="diagram-placeholder">
-        
-      </div>
-      <p style="font-size: 0.8rem; color: var(--muted);">Figure 1 : Flux de compétition entre G(z) et D(x).</p>
-    </div>
-  </div>
-</section>
+<!-- INTRO -->
+<section id="intro">
+<h2>1. Introduction</h2>
 
-<section id="vae-schema" style="background: var(--surface);">
-  <h2>02. Inférence Variationnelle (VAE)</h2>
-  <div class="tech-grid">
-    <div class="diagram-container" style="background: #050508;">
-      <div class="diagram-placeholder">
-        
-      </div>
-      <p style="font-size: 0.8rem; color: var(--muted);">Figure 2 : Le goulot d'étranglement (Bottleneck) probabiliste.</p>
-    </div>
-    <div>
-      <p>Dans un VAE, l'image est projetée dans un <strong>espace latent régularisé</strong>. Le schéma met en évidence que nous ne stockons pas une valeur fixe, mais des paramètres statistiques (μ, σ) permettant d'échantillonner de nouvelles données.</p>
-      <div class="math-box" style="margin-top:1.5rem; color: var(--accent-v);">
-        // Reparameterization Trick<br>
-        z = μ + σ ⊙ ε  where ε ~ N(0,1)
-      </div>
-    </div>
-  </div>
-</section>
+<p>
+La Computer Vision vise à transformer une image (matrice de pixels) en information sémantique exploitable.
+Les approches modernes reposent sur trois étapes : extraction de caractéristiques, représentation, et prédiction.
+</p>
 
-<section id="diffusion-schema">
-  <h2>03. Processus de Diffusion Itératif</h2>
-  <p style="margin-bottom: 2rem;">Le modèle de diffusion se distingue par sa temporalité. Il ne s'agit pas d'une passe unique, mais d'une succession de micro-étapes de débruitage.</p>
-  
-  <div class="diagram-container">
-    <div class="diagram-placeholder" style="padding: 6rem 2rem;">
-      
-    </div>
-    <p style="font-size: 0.8rem; color: var(--muted);">Figure 3 : Chaîne de Markov du processus de diffusion (Ho et al., 2020).</p>
-  </div>
-  
-  <p>Chaque étape $t$ du processus inverse tente de prédire le bruit ajouté à l'étape $t-1$ pour restaurer progressivement la structure de l'image.</p>
-</section>
-
-<section style="background: var(--surface2);">
-  <h2>04. Synthèse des Flux de Données</h2>
-  <div class="diagram-container" style="background: transparent; border: none;">
-     <div class="diagram-placeholder">
-        [Image comparing data flow of GAN, VAE, and Diffusion side-by-side]
-      </div>
-  </div>
-  <p style="text-align: center; color: var(--muted); font-size: 0.9rem;">Comparaison structurelle : Les GANs optimisent une frontière de décision, les VAEs optimisent une densité de probabilité, et les modèles de Diffusion optimisent un champ de score.</p>
-</section>
-
-<div class="footer">
-  <p>Documentation Technique - Module Computer Vision S8</p>
-  <p style="font-size: 0.7rem; margin-top: 1rem;">Schémas basés sur les publications originales : Goodfellow (2014), Kingma (2013), Ho (2020).</p>
+<div class="math-block">
+Image ∈ ℝ^(H × W × C)
 </div>
+
+<div class="schema">
+📌 Schéma à insérer : Pipeline global Vision (Image → Features → Model → Output)
+</div>
+
+</section>
+
+<!-- FONDATIONS -->
+<section id="fundations">
+<h2>2. Fondations de la vision artificielle</h2>
+
+<div class="tech-card">
+<h3>Problème central</h3>
+<p>
+Une image brute contient uniquement des valeurs numériques.
+Le défi est de construire une représentation robuste invariant aux transformations (rotation, échelle, illumination).
+</p>
+
+<div class="eli5">
+Analogie : une image est un puzzle de pixels. Le modèle doit comprendre l’image complète à partir des pièces.
+</div>
+</div>
+
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+<h2>3. Feature Engineering (pré-deep learning)</h2>
+
+<div class="grid">
+
+<div class="tech-card">
+<h3 class="hl-v">SIFT</h3>
+<p>Détection de points clés invariants aux transformations.</p>
+
+<p><b>Étapes :</b></p>
+<ul>
+<li>Détection de keypoints</li>
+<li>Description locale</li>
+<li>Vecteur de signature</li>
+</ul>
+
+<div class="schema">
+📌 Schéma SIFT : Keypoints → Patch → Descripteur
+</div>
+</div>
+
+<div class="tech-card">
+<h3 class="hl-d">HOG</h3>
+<p>Représentation basée sur les gradients d’intensité.</p>
+
+<p><b>Principe :</b> distribution des orientations des bords.</p>
+
+<div class="schema">
+📌 Schéma HOG : Image → Gradients → Histogrammes
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- CNN -->
+<section id="cnn">
+<h2>4. CNN (Convolutional Neural Networks)</h2>
+
+<div class="tech-card">
+<h3>Principe</h3>
+<p>
+Les CNN apprennent automatiquement des représentations hiérarchiques :
+bords → textures → objets.
+</p>
+
+<div class="math-block">
+Feature map = Image * Kernel
+</div>
+
+<div class="grid">
+
+<div>
+<h3>Composants</h3>
+<ul>
+<li>Convolution</li>
+<li>ReLU</li>
+<li>Pooling</li>
+<li>Fully Connected</li>
+</ul>
+</div>
+
+<div class="eli5">
+Analogie : un CNN est un système de filtres successifs qui simplifient progressivement une image complexe.
+</div>
+
+</div>
+
+<div class="schema">
+📌 Schéma CNN : Input → Conv → ReLU → Pool → Dense
+</div>
+
+</div>
+</section>
+
+<!-- GEN AI -->
+<section id="genai">
+<h2>5. Generative AI en Vision</h2>
+
+<div class="tech-card">
+
+<h3 class="hl-g">GAN</h3>
+<p>Modèle basé sur une compétition entre générateur et discriminateur.</p>
+
+<div class="math-block">
+min_G max_D V(D,G)
+</div>
+
+<div class="schema">📌 Schéma GAN</div>
+
+</div>
+
+<div class="tech-card">
+
+<h3 class="hl-v">VAE</h3>
+<p>Modèle probabiliste basé sur un espace latent régularisé.</p>
+
+<div class="math-block">
+Loss = reconstruction + KL divergence
+</div>
+
+<div class="schema">📌 Schéma VAE</div>
+
+</div>
+
+<div class="tech-card">
+
+<h3 class="hl-d">Diffusion Models</h3>
+<p>Processus de débruitage progressif.</p>
+
+<div class="schema">📌 Schéma Diffusion (forward / reverse)</div>
+
+</div>
+
+</section>
+
+<!-- COMPARISON -->
+<section id="comparison">
+<h2>6. Comparaison des modèles</h2>
+
+<div class="tech-card">
+
+<table style="width:100%;color:var(--text);border-collapse:collapse;">
+<tr>
+<th>Modèle</th>
+<th>Principe</th>
+<th>Forces</th>
+<th>Limites</th>
+</tr>
+
+<tr>
+<td>GAN</td>
+<td>Adversarial learning</td>
+<td>Images réalistes</td>
+<td>Instabilité</td>
+</tr>
+
+<tr>
+<td>VAE</td>
+<td>Probabiliste</td>
+<td>Espace structuré</td>
+<td>Flou</td>
+</tr>
+
+<tr>
+<td>Diffusion</td>
+<td>Denoising</td>
+<td>SOTA qualité</td>
+<td>Lent</td>
+</tr>
+
+</table>
+
+</div>
+
+</section>
+
+<!-- CONCLUSION -->
+<section>
+<h2>7. Conclusion</h2>
+
+<p>
+La Computer Vision moderne repose sur l’évolution des représentations :
+de l’ingénierie manuelle (SIFT/HOG) vers l’apprentissage profond (CNN),
+et aujourd’hui vers les modèles génératifs (GAN, VAE, Diffusion).
+</p>
+
+<p>
+Les modèles génératifs permettent non seulement de comprendre les données,
+mais aussi de modéliser leur distribution complète.
+</p>
+
+</section>
 
 </body>
 </html>
