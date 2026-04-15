@@ -3,195 +3,1154 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GenAI & Computer Vision | Analyse Comparative et Pédagogique</title>
+<title>GenAI en Computer Vision — Blog ELI5</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0d0d12;
-    --surface: #16161f;
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c27;
     --border: #2a2a3a;
-    --text: #f0f0f5;
-    --muted: #9494b8;
-    --accent-gan: #ff6a9b;
-    --accent-vae: #7c6aff;
-    --accent-diff: #6affd4;
-    --accent-gold: #ffd96a;
+    --text: #e8e8f0;
+    --muted: #7a7a9a;
+    --accent1: #7c6aff; /* violet */
+    --accent2: #ff6a9b; /* rose */
+    --accent3: #6affd4; /* cyan */
+    --accent4: #ffd96a; /* gold */
+    --gan: #ff6a9b;
+    --vae: #7c6aff;
+    --diff: #6affd4;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'DM Sans', sans-serif;
-    line-height: 1.7;
-    padding: 2rem;
+    font-size: 17px;
+    line-height: 1.75;
+    overflow-x: hidden;
   }
 
-  header { max-width: 900px; margin: 4rem auto; text-align: center; }
-  h1 { font-family: 'Syne', sans-serif; font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; }
-  h2 { font-family: 'Syne', sans-serif; font-size: 2rem; margin: 3rem 0 1.5rem; color: var(--accent-gold); }
-  h3 { font-family: 'Syne', sans-serif; font-size: 1.5rem; margin: 2rem 0 1rem; }
-
-  .container { max-width: 850px; margin: 0 auto; }
-  .abstract { 
-    background: var(--surface); 
-    padding: 2rem; 
-    border-radius: 12px; 
-    border-left: 4px solid var(--accent-gold);
-    margin-bottom: 3rem;
-    font-style: italic;
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: .5;
   }
 
-  .card {
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10,10,15,.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: -.02em;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  nav ul { display: flex; gap: 1.5rem; list-style: none; }
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 500;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    transition: color .2s;
+  }
+  nav a:hover { color: var(--text); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 50%, rgba(124,106,255,.18) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 40%, rgba(255,106,155,.15) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 80%, rgba(106,255,212,.10) 0%, transparent 50%);
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: .35rem 1rem;
+    font-size: .8rem;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: fadeUp .6s ease both;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -.04em;
+    animation: fadeUp .7s .1s ease both;
+  }
+
+  .hero h1 .line2 {
+    background: linear-gradient(90deg, var(--accent1) 0%, var(--accent2) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    max-width: 580px;
+    color: var(--muted);
+    font-size: 1.1rem;
+    font-weight: 300;
+    margin: 1.5rem auto 0;
+    animation: fadeUp .7s .2s ease both;
+  }
+
+  .hero-pills {
+    display: flex;
+    gap: .75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    animation: fadeUp .7s .3s ease both;
+  }
+  .pill {
+    padding: .45rem 1.1rem;
+    border-radius: 99px;
+    font-size: .85rem;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .pill.gan  { color: var(--gan);  border-color: rgba(255,106,155,.4);  background: rgba(255,106,155,.08); }
+  .pill.vae  { color: var(--vae);  border-color: rgba(124,106,255,.4);  background: rgba(124,106,255,.08); }
+  .pill.diff { color: var(--diff); border-color: rgba(106,255,212,.4);  background: rgba(106,255,212,.08); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .4rem;
+    color: var(--muted);
+    font-size: .75rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    animation: fadeUp .7s .5s ease both;
+  }
+  .scroll-hint::after {
+    content: '';
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--muted), transparent);
+    animation: scrollLine 1.5s ease-in-out infinite;
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 6rem 2rem; max-width: 900px; margin: 0 auto; }
+
+  .section-tag {
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent1);
+    margin-bottom: .75rem;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -.03em;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+
+  p { color: #c0c0d8; margin-bottom: 1rem; }
+
+  /* ── INTRO CARDS ── */
+  .intro-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+  .intro-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    transition: transform 0.3s ease;
-  }
-  .card:hover { transform: translateY(-5px); border-color: var(--muted); }
-
-  .tag {
-    display: inline-block;
-    padding: 0.2rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
-
-  table { width: 100%; border-collapse: collapse; margin: 2rem 0; background: var(--surface); border-radius: 12px; overflow: hidden; }
-  th, td { padding: 1.2rem; text-align: left; border-bottom: 1px solid var(--border); }
-  th { background: #1c1c27; color: var(--accent-gold); font-family: 'Syne', sans-serif; }
-
-  .eli5-box {
-    background: rgba(124, 106, 255, 0.1);
-    border: 1px dashed var(--accent-vae);
     padding: 1.5rem;
-    border-radius: 12px;
-    margin: 1.5rem 0;
+    transition: border-color .2s, transform .2s;
   }
-  
-  .footer { margin-top: 5rem; text-align: center; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 2rem; }
-  
-  strong { color: var(--text); font-weight: 600; }
-  .highlight { color: var(--accent-gold); font-weight: 600; }
+  .intro-card:hover { border-color: var(--accent1); transform: translateY(-3px); }
+  .intro-card .icon { font-size: 2rem; margin-bottom: .75rem; }
+  .intro-card h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+  .intro-card p { font-size: .9rem; color: var(--muted); margin: 0; }
+
+  /* ── ANALOGY BOX ── */
+  .analogy {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .analogy .emoji { font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+  .analogy-text strong { color: var(--accent3); display: block; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; margin-bottom: .25rem; }
+  .analogy-text p { margin: 0; font-size: .95rem; color: var(--muted); }
+
+  /* ── ARCH CARDS ── */
+  .arch-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 4rem;
+    transition: border-color .3s;
+  }
+  .arch-card.gan-card:hover  { border-color: var(--gan); }
+  .arch-card.vae-card:hover  { border-color: var(--vae); }
+  .arch-card.diff-card:hover { border-color: var(--diff); }
+
+  .arch-header {
+    padding: 2rem 2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+  .arch-num {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .gan-card  .arch-num { background: rgba(255,106,155,.15); color: var(--gan); }
+  .vae-card  .arch-num { background: rgba(124,106,255,.15); color: var(--vae); }
+  .diff-card .arch-num { background: rgba(106,255,212,.15); color: var(--diff); }
+
+  .arch-title { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; }
+  .arch-subtitle { color: var(--muted); font-size: .9rem; margin: .25rem 0 0; }
+
+  .arch-body { padding: 2rem; }
+
+  /* ── SVG DIAGRAMS ── */
+  .diagram-wrap {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+  .diagram-wrap svg { display: block; margin: 0 auto; }
+
+  /* ── PROS/CONS ── */
+  .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  @media(max-width:600px){ .pros-cons { grid-template-columns: 1fr; } }
+  .pros-cons-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+  .pros-cons-box h4 {
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: .75rem;
+  }
+  .pros-box h4 { color: var(--accent3); }
+  .cons-box h4 { color: var(--accent2); }
+  .pros-cons-box ul { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+  .pros-cons-box li { font-size: .9rem; color: var(--muted); display: flex; gap: .5rem; align-items: flex-start; }
+  .pros-box li::before  { content: '✓'; color: var(--accent3); font-weight: 700; flex-shrink: 0; }
+  .cons-box li::before  { content: '✗'; color: var(--accent2); font-weight: 700; flex-shrink: 0; }
+
+  /* ── COMPARISON TABLE ── */
+  .table-wrap {
+    overflow-x: auto;
+    margin-top: 2rem;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--surface2);
+    padding: 1rem 1.25rem;
+    text-align: left;
+    font-family: 'Syne', sans-serif;
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 1rem 1.25rem;
+    font-size: .9rem;
+    color: #c0c0d8;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+  .tag { display: inline-block; padding: .2rem .7rem; border-radius: 6px; font-size: .78rem; font-weight: 600; }
+  .tag.gan  { background: rgba(255,106,155,.15); color: var(--gan); }
+  .tag.vae  { background: rgba(124,106,255,.15); color: var(--vae); }
+  .tag.diff { background: rgba(106,255,212,.15); color: var(--diff); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: .85rem;
+  }
+  footer strong { color: var(--text); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scrollLine {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0; }
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  @keyframes flow {
+    0%   { stroke-dashoffset: 200; }
+    100% { stroke-dashoffset: 0; }
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-6px); }
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 auto;
+  }
+
+  /* ── HIGHLIGHT ── */
+  .hl { color: var(--text); font-weight: 500; }
+  .hl-gan  { color: var(--gan); }
+  .hl-vae  { color: var(--vae); }
+  .hl-diff { color: var(--diff); }
+
+  /* ── STEP LIST ── */
+  .steps { display: flex; flex-direction: column; gap: .75rem; margin: 1rem 0; }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: .9rem 1.1rem;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .8rem;
+    font-weight: 800;
+    font-family: 'Syne', sans-serif;
+    flex-shrink: 0;
+  }
+  .step p { margin: 0; font-size: .9rem; color: var(--muted); }
+  .step p strong { color: var(--text); }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="tag" style="background: var(--accent-vae); color: white;">Projet Computer Vision</div>
-  <h1>L'Éveil Créatif des Machines : Comprendre la GenAI</h1>
-  <p style="color: var(--muted); font-size: 1.2rem;">Par l'équipe du projet "Virtual Museum"</p>
-</header>
+<!-- NAV -->
+<nav>
+  <div class="logo">GenAI × CV</div>
+  <ul>
+    <li><a href="#intro">Intro</a></li>
+    <li><a href="#gan">GAN</a></li>
+    <li><a href="#vae">VAE</a></li>
+    <li><a href="#diffusion">Diffusion</a></li>
+    <li><a href="#comparaison">Comparaison</a></li>
+  </ul>
+</nav>
 
-<div class="container">
-  <div class="abstract">
-    <strong>Résumé Académique :</strong> Ce blog explore la transition de la Computer Vision analytique vers les paradigmes génératifs. Nous analysons les architectures GAN, VAE et Modèles de Diffusion à travers une double lecture : une explication simplifiée (ELI5) pour la vulgarisation et une analyse critique des avantages et limites techniques.
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-badge">Computer Vision &amp; Generative AI · S8 · ENSIASD 2025–2026</div>
+  <h1>
+    De la perception à la<br>
+    <span class="line2">création visuelle</span>
+  </h1>
+  <p class="hero-sub">
+    GAN, VAE, Diffusion Models — les trois piliers de l'IA générative en Computer Vision, décryptés avec rigueur, analogies et schémas.
+  </p>
+  <div class="hero-pills">
+    <span class="pill gan">GAN · Goodfellow, 2014</span>
+    <span class="pill vae">VAE · Kingma &amp; Welling, 2013</span>
+    <span class="pill diff">Diffusion · Ho et al., 2020</span>
+  </div>
+  <div class="scroll-hint">Défiler</div>
+</div>
+
+<!-- ═══════════════════════════════ INTRO ═══════════════════════════════ -->
+<section id="intro">
+  <div class="section-tag">01 — Introduction</div>
+  <h2>C'est quoi le Generative AI en Computer Vision ?</h2>
+  <p>
+    Pendant longtemps, la Computer Vision s'est concentrée sur des tâches <span class="hl">discriminatives</span> : classifier une image (chat ou chien ?), détecter des objets, segmenter des régions. Ces modèles apprennent une fonction <strong>p(y|x)</strong> — la probabilité d'un label <em>y</em> étant donné une entrée <em>x</em>.
+  </p>
+  <p>
+    Le <span class="hl">Generative AI</span> opère dans la direction inverse. Au lieu d'analyser le monde visuel, il cherche à le <span class="hl">modéliser et à le synthétiser</span>. Formellement, un modèle génératif apprend la distribution jointe <strong>p(x)</strong> — ou plus précisément, une approximation de la vraie distribution des données réelles p<sub>data</sub>(x) — afin de pouvoir en tirer de nouveaux échantillons.
+  </p>
+
+  <div class="analogy">
+    <div class="emoji">🎨</div>
+    <div class="analogy-text">
+      <strong>Discriminatif vs. Génératif</strong>
+      <p>Un modèle <strong>discriminatif</strong> est comme un critique d'art : il regarde un tableau et dit "Monet ou pas Monet ?". Un modèle <strong>génératif</strong> est comme un peintre : il a étudié des milliers de toiles de Monet jusqu'à maîtriser son style, et peut désormais <em>peindre</em> une nouvelle œuvre cohérente avec cet univers.</p>
+    </div>
   </div>
 
-  <section id="introduction">
-    <h2>01. La Révolution Générative</h2>
-    <p>
-      Traditionnellement, la vision par ordinateur servait à <strong>analyser</strong> (détecter un visage, classer un objet). Avec la <strong>GenAI</strong>, l'objectif change : il s'agit de <strong>synthétiser</strong>. Au lieu de simplement reconnaître un motif, le modèle apprend les lois statistiques qui régissent la création d'une image pour en générer de nouvelles, totalement inédites mais statistiquement crédibles.
-    </p>
-    <div class="eli5-box">
-      <strong>Analogie ELI5 :</strong> Imaginez qu'au lieu de simplement savoir reconnaître un dessin de chat dans un livre, vous deveniez capable de dessiner un chat parfait qui n'a jamais existé.
+  <div class="intro-grid">
+    <div class="intro-card">
+      <div class="icon">🖼️</div>
+      <h3>Synthèse d'images</h3>
+      <p>Générer des visages, paysages ou objets photoréalistes à partir de bruit aléatoire ou d'un prompt textuel (DALL·E, Stable Diffusion)</p>
     </div>
-  </section>
+    <div class="intro-card">
+      <div class="icon">🔄</div>
+      <h3>Image-to-Image</h3>
+      <p>Transfert de style, colorisation, traduction d'un domaine visuel vers un autre (peinture ↔ photo, carte ↔ satellite, etc.)</p>
+    </div>
+    <div class="intro-card">
+      <div class="icon">🔧</div>
+      <h3>Inpainting &amp; Restauration</h3>
+      <p>Reconstruire intelligemment des régions manquantes ou dégradées d'une image en modélisant le contexte global</p>
+    </div>
+    <div class="intro-card">
+      <div class="icon">📈</div>
+      <h3>Data Augmentation</h3>
+      <p>Pallier le manque de données réelles étiquetées (images médicales rares, scénarios de conduite autonome peu fréquents)</p>
+    </div>
+  </div>
 
-  <section id="architectures">
-    <h2>02. Taxonomie des Architectures</h2>
-
-    <div class="card" style="border-top: 4px solid var(--accent-gan);">
-      <div class="tag" style="background: var(--accent-gan); color: white;">Architecture 01</div>
-      <h3>GAN : Les Réseaux Antagonistes</h3>
-      <p>Inspirés par la théorie des jeux, les GANs reposent sur une compétition entre deux réseaux : le <strong>Générateur</strong> et le <strong>Discriminateur</strong>.</p>
-      <ul>
-        <li><strong>Avantages :</strong> Production d'images d'une grande netteté, excellentes pour les textures haute résolution.</li>
-        <li><strong>Limites :</strong> Instabilité lors de l'entraînement (le fameux "Mode Collapse").</li>
-      </ul>
-      <div class="eli5-box">
-        <strong>Mode ELI5 :</strong> C'est comme un duel entre un faussaire qui crée des billets et un policier qui apprend à les repérer. À force de perdre, le faussaire devient si doué qu'on ne peut plus distinguer le vrai du faux.
+  <div style="margin-top:3rem">
+    <div class="section-tag">Pourquoi le GenAI est-il crucial ?</div>
+    <p style="margin-top:1rem">Au-delà de la génération esthétique, l'IA générative répond à des enjeux industriels et scientifiques concrets :</p>
+    <div class="steps" style="margin-top:1rem">
+      <div class="step">
+        <div class="step-num" style="background:rgba(124,106,255,.2);color:var(--vae)">1</div>
+        <p><strong>Rareté des données supervisées</strong> — En imagerie médicale, annoter un scanner prend des heures à un radiologue expert. Les GAN permettent de générer des exemples synthétiques pathologiques pour entraîner des détecteurs de tumeurs sans exposer de vraies données patients.</p>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(255,106,155,.2);color:var(--gan)">2</div>
+        <p><strong>Compréhension de la distribution des données</strong> — Apprendre p(x) oblige le modèle à encoder une connaissance profonde de la structure du monde visuel, utile pour la détection d'anomalies (tout ce qui a une faible probabilité est suspect).</p>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(106,255,212,.2);color:var(--diff)">3</div>
+        <p><strong>Création et co-création</strong> — Les outils text-to-image (Midjourney, Firefly) transforment le design graphique, l'architecture et la production audiovisuelle. Ils s'appuient intégralement sur des Diffusion Models guidés par des encodeurs de texte (CLIP).</p>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(255,217,106,.2);color:var(--accent4)">4</div>
+        <p><strong>Robustesse et test adversarial</strong> — Comme démontré dans les travaux sur le Face Anti-Spoofing (FAS), les modèles génératifs peuvent simuler des attaques adversariales (FGSM, PGD) pour évaluer et renforcer la robustesse des systèmes biométriques.</p>
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="card" style="border-top: 4px solid var(--accent-vae);">
-      <div class="tag" style="background: var(--accent-vae); color: white;">Architecture 02</div>
-      <h3>VAE : Auto-encodeurs Variationnels</h3>
-      <p>Les VAEs utilisent une approche probabiliste pour compresser l'information dans un "espace latent" structuré avant de la reconstruire.</p>
-      <ul>
-        <li><strong>Avantages :</strong> Espace latent continu et bien organisé, idéal pour des modifications fluides.</li>
-        <li><strong>Limites :</strong> Tendance à produire des résultats légèrement flous (oversmoothing).</li>
-      </ul>
-      <div class="eli5-box">
-        <strong>Mode ELI5 :</strong> C'est comme un résumé de livre très intelligent. On prend toute l'histoire, on ne garde que l'essentiel dans un petit carnet, puis on essaie de réécrire le livre entier juste avec ces notes.
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════ GAN ═══════════════════════════════ -->
+<section id="gan">
+  <div class="section-tag">02 — Architecture #1</div>
+
+  <div class="arch-card gan-card">
+    <div class="arch-header">
+      <div class="arch-num">G</div>
+      <div>
+        <div class="arch-title">GAN <span style="font-weight:400;font-size:1rem;color:var(--muted)">— Generative Adversarial Network</span></div>
+        <div class="arch-subtitle">Goodfellow et al., 2014</div>
       </div>
     </div>
+    <div class="arch-body">
 
-    <div class="card" style="border-top: 4px solid var(--accent-diff);">
-      <div class="tag" style="background: var(--accent-diff); color: #0a0a0f;">Architecture 03</div>
-      <h3>Modèles de Diffusion</h3>
-      <p>Actuellement l'état de l'art (SOTA), ces modèles apprennent à inverser un processus de dégradation (bruit gaussien) pour générer une image cohérente.</p>
-      <ul>
-        <li><strong>Avantages :</strong> Qualité visuelle supérieure et immense diversité des échantillons.</li>
-        <li><strong>Limites :</strong> Coût computationnel élevé (processus itératif lent).</li>
-      </ul>
-      <div class="eli5-box">
-        <strong>Mode ELI5 :</strong> Imaginez une sculpture cachée dans un nuage de poussière. Le modèle souffle sur la poussière petit à petit jusqu'à ce que la forme parfaite apparaisse.
+      <p>
+        Proposés par <strong>Goodfellow et al. en 2014</strong>, les Generative Adversarial Networks constituent une rupture majeure dans la modélisation générative. L'idée centrale : faire s'affronter deux réseaux antagonistes jusqu'à ce que l'un devienne capable de produire des images indiscernables des données réelles.
+      </p>
+
+      <div class="analogy">
+        <div class="emoji">🎭</div>
+        <div class="analogy-text">
+          <strong>Analogie — Le Faussaire vs le Détective</strong>
+          <p>Imagine un <strong style="color:var(--gan)">faussaire</strong> qui tente de reproduire des billets de banque, et un <strong style="color:#ffd96a">détective</strong> chargé de détecter les contrefaçons. Chaque fois que le détective identifie un faux, le faussaire améliore sa technique. Chaque fois que le faussaire trompe le détective, celui-ci affine sa vigilance. Cette co-évolution force les deux acteurs à progresser indéfiniment — jusqu'à ce que les billets du faussaire deviennent <em>parfaitement indiscernables</em> des vrais.</p>
+        </div>
+      </div>
+
+      <!-- DIAGRAM GAN -->
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 760 240" width="100%" style="max-width:760px">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0,8 3,0 6" fill="#555"/>
+            </marker>
+            <marker id="arr-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0,8 3,0 6" fill="var(--gan)"/>
+            </marker>
+            <marker id="arr-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0,8 3,0 6" fill="var(--accent3)"/>
+            </marker>
+          </defs>
+
+          <!-- NOISE INPUT -->
+          <rect x="10" y="90" width="100" height="60" rx="10" fill="rgba(124,106,255,.12)" stroke="rgba(124,106,255,.4)" stroke-width="1.5"/>
+          <text x="60" y="116" text-anchor="middle" fill="#aaa" font-size="11" font-family="DM Sans">Bruit</text>
+          <text x="60" y="131" text-anchor="middle" fill="#aaa" font-size="11" font-family="DM Sans">aléatoire z</text>
+          <text x="60" y="148" text-anchor="middle" fill="var(--accent1)" font-size="10" font-family="DM Sans">~N(0,1)</text>
+
+          <!-- ARROW noise → G -->
+          <line x1="110" y1="120" x2="155" y2="120" stroke="#555" stroke-width="1.5" marker-end="url(#arr)" stroke-dasharray="4,3">
+            <animate attributeName="stroke-dashoffset" from="28" to="0" dur="1.5s" repeatCount="indefinite"/>
+          </line>
+
+          <!-- GENERATOR -->
+          <rect x="155" y="70" width="130" height="100" rx="12" fill="rgba(255,106,155,.12)" stroke="var(--gan)" stroke-width="2"/>
+          <text x="220" y="105" text-anchor="middle" fill="var(--gan)" font-size="13" font-weight="700" font-family="Syne">Générateur</text>
+          <text x="220" y="122" text-anchor="middle" fill="#aaa" font-size="10" font-family="DM Sans">G(z)</text>
+          <text x="220" y="138" text-anchor="middle" fill="#aaa" font-size="10" font-family="DM Sans">Crée une image</text>
+          <text x="220" y="154" text-anchor="middle" fill="#aaa" font-size="10" font-family="DM Sans">à partir du bruit</text>
+
+          <!-- ARROW G → fake image -->
+          <line x1="285" y1="120" x2="340" y2="120" stroke="#555" stroke-width="1.5" marker-end="url(#arr)">
+            <animate attributeName="stroke-dashoffset" from="0" to="-56" dur="1s" repeatCount="indefinite"/>
+          </line>
+          <text x="312" y="113" text-anchor="middle" fill="#666" font-size="9" font-family="DM Sans">Image</text>
+          <text x="312" y="123" text-anchor="middle" fill="#666" font-size="9" font-family="DM Sans">générée</text>
+
+          <!-- FAKE IMAGE -->
+          <rect x="340" y="90" width="70" height="60" rx="8" fill="rgba(255,106,155,.08)" stroke="rgba(255,106,155,.3)" stroke-width="1.5"/>
+          <text x="375" y="120" text-anchor="middle" fill="#aaa" font-size="10" font-family="DM Sans">🖼️ Fausse</text>
+          <text x="375" y="134" text-anchor="middle" fill="#aaa" font-size="10" font-family="DM Sans">image</text>
+
+          <!-- REAL DATA -->
+          <rect x="340" y="10" width="70" height="55" rx="8" fill="rgba(106,255,212,.08)" stroke="rgba(106,255,212,.3)" stroke-width="1.5"/>
+          <text x="375" y="35" text-anchor="middle" fill="#aaa" font-size="10" font-family="DM Sans">📷 Vraies</text>
+          <text x="375" y="49" text-anchor="middle" fill="#aaa" font-size="10" font-family="DM Sans">images</text>
+          <text x="375" y="60" text-anchor="middle" fill="var(--accent3)" font-size="9" font-family="DM Sans">(dataset)</text>
+
+          <!-- ARROWS → D -->
+          <line x1="410" y1="38" x2="460" y2="90" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="410" y1="120" x2="460" y2="120" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- DISCRIMINATOR -->
+          <rect x="460" y="70" width="130" height="100" rx="12" fill="rgba(255,217,106,.08)" stroke="var(--accent4)" stroke-width="2"/>
+          <text x="525" y="105" text-anchor="middle" fill="var(--accent4)" font-size="13" font-weight="700" font-family="Syne">Discriminateur</text>
+          <text x="525" y="122" text-anchor="middle" fill="#aaa" font-size="10" font-family="DM Sans">D(x)</text>
+          <text x="525" y="138" text-anchor="middle" fill="#aaa" font-size="10" font-family="DM Sans">Vrai ou Faux ?</text>
+
+          <!-- OUTPUT -->
+          <line x1="590" y1="120" x2="645" y2="120" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect x="645" y="95" width="100" height="50" rx="10" fill="rgba(255,255,255,.04)" stroke="var(--border)" stroke-width="1"/>
+          <text x="695" y="115" text-anchor="middle" fill="var(--accent3)" font-size="11" font-weight="700" font-family="Syne">Réel: 0.95</text>
+          <text x="695" y="133" text-anchor="middle" fill="var(--gan)" font-size="11" font-weight="700" font-family="Syne">Faux: 0.12</text>
+
+          <!-- FEEDBACK ARROW (loss back to G) -->
+          <path d="M525 170 Q525 210 220 210 Q220 185 220 170" fill="none" stroke="rgba(255,106,155,.5)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-red)">
+            <animate attributeName="stroke-dashoffset" from="0" to="-32" dur="2s" repeatCount="indefinite"/>
+          </path>
+          <text x="370" y="224" text-anchor="middle" fill="rgba(255,106,155,.7)" font-size="10" font-family="DM Sans">Gradient → améliore le Générateur</text>
+        </svg>
+      </div>
+
+      <p>Le GAN repose sur <span class="hl-gan">deux réseaux en compétition</span> entraînés simultanément :</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:rgba(255,106,155,.15);color:var(--gan)">G</div>
+          <p><strong>Le Générateur G(z)</strong> — prend en entrée un vecteur de bruit aléatoire z ∼ 𝒩(0, I) et le transforme en une image synthétique. Son unique objectif est de produire des images que D ne peut pas distinguer des vraies. G n'a jamais accès aux données réelles directement : il apprend uniquement via le gradient qui lui remonte depuis D.</p>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(255,217,106,.15);color:var(--accent4)">D</div>
+          <p><strong>Le Discriminateur D(x)</strong> — reçoit soit une vraie image x ∼ p<sub>data</sub>, soit une image générée G(z), et produit une probabilité entre 0 (faux) et 1 (réel). C'est un classifieur binaire standard, dont la perte guide à la fois sa propre amélioration et celle de G.</p>
+        </div>
+      </div>
+
+      <div class="analogy" style="border-left-color:var(--accent4)">
+        <div class="emoji">⚖️</div>
+        <div class="analogy-text">
+          <strong>Fonction objectif — Jeu Minimax</strong>
+          <p>L'entraînement minimise un jeu à somme nulle formalisé par Goodfellow :<br><br>
+          <em>min<sub>G</sub> max<sub>D</sub> V(D, G) = 𝔼<sub>x∼p_data</sub>[log D(x)] + 𝔼<sub>z∼p_z</sub>[log(1 − D(G(z)))]</em><br><br>
+          D cherche à maximiser V (distinguer vrai/faux) ; G cherche à le minimiser (tromper D). L'optimum théorique est atteint quand D(x) = 0.5 pour tout x — le discriminateur ne peut plus rien dire, ce qui correspond à p<sub>G</sub> = p<sub>data</sub>.</p>
+        </div>
+      </div>
+
+      <div class="analogy" style="border-left-color:var(--gan)">
+        <div class="emoji">🏆</div>
+        <div class="analogy-text">
+          <strong>Équilibre de Nash &amp; problème du Mode Collapse</strong>
+          <p>L'optimum correspond à un <strong>équilibre de Nash</strong> en théorie des jeux : ni G ni D ne peuvent unilatéralement améliorer leur performance. En pratique, cet équilibre est difficile à atteindre. Le <strong>mode collapse</strong> est le défaut le plus courant : G apprend à produire une seule image (ou quelques variantes) qui trompe systématiquement D, au lieu d'explorer toute la distribution. Des variantes comme WGAN (Wasserstein GAN) ou StyleGAN ont apporté des solutions significatives à cette instabilité.</p>
+        </div>
+      </div>
+
+      <p>Les variantes les plus influentes incluent <strong>DCGAN</strong> (2015, convolutions), <strong>Pix2Pix</strong> (2016, image-to-image conditionnel), <strong>CycleGAN</strong> (2017, traduction sans paires supervisées) et <strong>StyleGAN</strong> (2019, Nvidia, génération de visages haute résolution).</p>
+
+      <div class="pros-cons">
+        <div class="pros-cons-box pros-box">
+          <h4>✦ Avantages</h4>
+          <ul>
+            <li>Qualité d'image très élevée, détails fins</li>
+            <li>Génération rapide à l'inférence (1 forward pass)</li>
+            <li>Grande flexibilité applicative (style, domaine, résolution)</li>
+            <li>Pas besoin d'estimer explicitement p(x)</li>
+          </ul>
+        </div>
+        <div class="pros-cons-box cons-box">
+          <h4>✦ Limites</h4>
+          <ul>
+            <li>Entraînement instable, sensible aux hyperparamètres</li>
+            <li>Mode collapse : couverture incomplète de la distribution</li>
+            <li>Pas de probabilité explicite : évaluation difficile</li>
+            <li>Pas d'encodeur natif : pas d'inférence inverse</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════ VAE ═══════════════════════════════ -->
+<section id="vae">
+  <div class="section-tag">03 — Architecture #2</div>
+
+  <div class="arch-card vae-card">
+    <div class="arch-header">
+      <div class="arch-num">V</div>
+      <div>
+        <div class="arch-title">VAE <span style="font-weight:400;font-size:1rem;color:var(--muted)">— Variational Autoencoder</span></div>
+        <div class="arch-subtitle">Kingma & Welling, 2013</div>
       </div>
     </div>
-  </section>
+    <div class="arch-body">
 
-  <section id="comparaison">
-    <h2>03. Analyse Comparative</h2>
+      <p>
+        Introduit par <strong>Kingma &amp; Welling en 2013</strong>, le Variational Autoencoder est le premier modèle génératif à combiner les réseaux de neurones profonds avec l'inférence variationnelle bayésienne. Là où un autoencoder classique encode chaque entrée en un <em>point</em> fixe dans un espace latent, le VAE l'encode en une <em>distribution</em> probabiliste — une innovation qui change tout.
+      </p>
+
+      <div class="analogy">
+        <div class="emoji">📮</div>
+        <div class="analogy-text">
+          <strong>Analogie — Le Résumeur Créatif</strong>
+          <p>Imagine un traducteur qui doit résumer une image complexe en une courte description approximative (encodeur), puis confie cette description à un illustrateur qui recrée l'image (décodeur). L'essentiel est que la description contient une <em>incertitude contrôlée</em> : elle ne dit pas "c'est exactement ça", mais "c'est approximativement dans cette zone du concept". Cette imprécision voulue permet à l'illustrateur de créer de nouvelles variantes jamais vues — c'est la génération.</p>
+        </div>
+      </div>
+
+      <!-- DIAGRAM VAE -->
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 760 200" width="100%" style="max-width:760px">
+          <!-- INPUT IMAGE -->
+          <rect x="10" y="70" width="80" height="70" rx="10" fill="rgba(124,106,255,.1)" stroke="rgba(124,106,255,.4)" stroke-width="1.5"/>
+          <text x="50" y="98" text-anchor="middle" fill="#aaa" font-size="10" font-family="DM Sans">Image</text>
+          <text x="50" y="112" text-anchor="middle" fill="#888" font-size="20">🐱</text>
+
+          <!-- ENCODER -->
+          <polygon points="90,65 200,85 200,145 90,165" fill="rgba(124,106,255,.1)" stroke="var(--vae)" stroke-width="1.8"/>
+          <text x="145" y="108" text-anchor="middle" fill="var(--vae)" font-size="12" font-weight="700" font-family="Syne">Encodeur</text>
+          <text x="145" y="123" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans">Compresse</text>
+
+          <!-- LATENT SPACE -->
+          <rect x="205" y="75" width="110" height="60" rx="12" fill="rgba(255,217,106,.08)" stroke="var(--accent4)" stroke-width="1.8"/>
+          <text x="260" y="97" text-anchor="middle" fill="var(--accent4)" font-size="11" font-weight="700" font-family="Syne">Espace latent z</text>
+          <text x="260" y="112" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans">μ (moyenne)</text>
+          <text x="260" y="126" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans">σ (variance)</text>
+
+          <!-- SAMPLING -->
+          <rect x="320" y="88" width="35" height="34" rx="8" fill="rgba(255,106,155,.1)" stroke="rgba(255,106,155,.4)" stroke-width="1.5"/>
+          <text x="338" y="108" text-anchor="middle" fill="var(--gan)" font-size="10" font-family="Syne" font-weight="700">~</text>
+          <!-- label -->
+          <text x="338" y="140" text-anchor="middle" fill="rgba(255,106,155,.7)" font-size="9" font-family="DM Sans">Sample</text>
+
+          <!-- ARROW through latent -->
+          <line x1="90" y1="115" x2="205" y2="105" stroke="#555" stroke-width="1.5"/>
+          <line x1="315" y1="105" x2="355" y2="105" stroke="#555" stroke-width="1.5"/>
+
+          <!-- DECODER -->
+          <polygon points="355,85 465,65 465,165 355,145" fill="rgba(106,255,212,.08)" stroke="var(--diff)" stroke-width="1.8"/>
+          <text x="410" y="108" text-anchor="middle" fill="var(--diff)" font-size="12" font-weight="700" font-family="Syne">Décodeur</text>
+          <text x="410" y="123" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans">Reconstruit</text>
+
+          <!-- OUTPUT -->
+          <rect x="470" y="70" width="80" height="70" rx="10" fill="rgba(106,255,212,.08)" stroke="rgba(106,255,212,.3)" stroke-width="1.5"/>
+          <text x="510" y="98" text-anchor="middle" fill="#aaa" font-size="10" font-family="DM Sans">Image</text>
+          <text x="510" y="112" text-anchor="middle" fill="#888" font-size="20">🐱</text>
+          <text x="510" y="132" text-anchor="middle" fill="var(--diff)" font-size="9" font-family="DM Sans">reconstruit</text>
+
+          <!-- arrow decode → out -->
+          <line x1="465" y1="115" x2="470" y2="115" stroke="#555" stroke-width="1.5"/>
+
+          <!-- NEW GENERATION -->
+          <rect x="570" y="70" width="80" height="70" rx="10" fill="rgba(255,217,106,.06)" stroke="rgba(255,217,106,.3)" stroke-width="1.5"/>
+          <text x="610" y="95" text-anchor="middle" fill="#aaa" font-size="10" font-family="DM Sans">Nouvelle</text>
+          <text x="610" y="108" text-anchor="middle" fill="#888" font-size="20">🐶</text>
+          <text x="610" y="130" text-anchor="middle" fill="var(--accent4)" font-size="9" font-family="DM Sans">génération</text>
+
+          <!-- arrow: sample new z → decoder -->
+          <rect x="572" y="148" width="80" height="22" rx="6" fill="rgba(255,217,106,.08)" stroke="rgba(255,217,106,.3)" stroke-width="1"/>
+          <text x="612" y="163" text-anchor="middle" fill="var(--accent4)" font-size="9" font-family="DM Sans">z ~ N(0,1) → décodeur</text>
+
+          <!-- LOSS label -->
+          <rect x="190" y="160" width="160" height="22" rx="6" fill="rgba(124,106,255,.08)" stroke="rgba(124,106,255,.25)" stroke-width="1"/>
+          <text x="270" y="175" text-anchor="middle" fill="var(--vae)" font-size="9" font-family="DM Sans">Loss = Reconstruction + KL Divergence</text>
+        </svg>
+      </div>
+
+      <p>Le VAE est un <span class="hl-vae">modèle génératif probabiliste à variables latentes</span>. Son architecture se décompose en deux réseaux :</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:rgba(124,106,255,.15);color:var(--vae)">E</div>
+          <p><strong>L'Encodeur q<sub>φ</sub>(z|x)</strong> — prend une image x en entrée et prédit les paramètres μ<sub>φ</sub>(x) et σ<sub>φ</sub>(x) d'une distribution gaussienne dans l'espace latent. On tire ensuite z ∼ 𝒩(μ, σ²) via le <strong>reparameterization trick</strong> : z = μ + σ ⊙ ε, ε ∼ 𝒩(0, I), ce qui rend l'échantillonnage différentiable (crucial pour la rétropropagation).</p>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(106,255,212,.15);color:var(--diff)">D</div>
+          <p><strong>Le Décodeur p<sub>θ</sub>(x|z)</strong> — reconstruit l'image depuis z. Pour générer de nouvelles images, on tire directement z ∼ 𝒩(0, I) et on décode : aucune image réelle n'est nécessaire à l'inférence.</p>
+        </div>
+      </div>
+
+      <div class="analogy" style="border-left-color:var(--accent4)">
+        <div class="emoji">📐</div>
+        <div class="analogy-text">
+          <strong>Fonction objectif — ELBO (Evidence Lower BOund)</strong>
+          <p>Le VAE maximise la borne inférieure de la log-vraisemblance des données :<br><br>
+          <em>ℒ(θ, φ; x) = 𝔼<sub>q_φ(z|x)</sub>[log p<sub>θ</sub>(x|z)] − D<sub>KL</sub>(q<sub>φ</sub>(z|x) ‖ p(z))</em><br><br>
+          Le premier terme est la <strong>perte de reconstruction</strong> (l'image reconstruite ressemble-t-elle à l'original ?). Le second terme est la <strong>divergence KL</strong>, qui force l'espace latent à rester proche d'une gaussienne standard — garantissant que l'espace est continu et que tout point z peut être décodé en quelque chose de cohérent.</p>
+        </div>
+      </div>
+
+      <div class="analogy" style="border-left-color:var(--vae)">
+        <div class="emoji">🗺️</div>
+        <div class="analogy-text">
+          <strong>L'espace latent — Une carte structurée de la sémantique visuelle</strong>
+          <p>La régularisation KL force l'espace latent à être continu et organisé : des images similaires sont encodées dans des régions proches. Cela permet des <strong>interpolations sémantiques</strong> — en interpolant linéairement entre deux points z, l'image générée évolue progressivement d'un concept à l'autre. C'est une propriété fondamentale pour l'édition d'images et la compréhension du manifold de données.</p>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros-cons-box pros-box">
+          <h4>✦ Avantages</h4>
+          <ul>
+            <li>Entraînement stable avec une fonction de perte bien définie (ELBO)</li>
+            <li>Espace latent continu, structuré et interpolable</li>
+            <li>Inférence probabiliste : quantification de l'incertitude</li>
+            <li>Encodeur intégré : utile pour compression et classification</li>
+          </ul>
+        </div>
+        <div class="pros-cons-box cons-box">
+          <h4>✦ Limites</h4>
+          <ul>
+            <li>Images générées souvent floues (compromis reconstruction/régularisation)</li>
+            <li>L'hypothèse gaussienne de l'espace latent peut être trop restrictive</li>
+            <li>Qualité visuelle inférieure aux GAN et Diffusion Models</li>
+            <li>Tension inhérente entre fidélité et régularité de l'espace latent</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════ DIFFUSION ═══════════════════════════════ -->
+<section id="diffusion">
+  <div class="section-tag">04 — Architecture #3</div>
+
+  <div class="arch-card diff-card">
+    <div class="arch-header">
+      <div class="arch-num">D</div>
+      <div>
+        <div class="arch-title">Diffusion Models <span style="font-weight:400;font-size:1rem;color:var(--muted)">— DDPM</span></div>
+        <div class="arch-subtitle">Ho et al., 2020 · Base de Stable Diffusion, DALL·E 2, Midjourney</div>
+      </div>
+    </div>
+    <div class="arch-body">
+
+      <p>
+        Formalisés par <strong>Ho et al. en 2020</strong> sous le nom de Denoising Diffusion Probabilistic Models (DDPM), les modèles de diffusion constituent aujourd'hui l'état de l'art de la génération d'images. Leur idée est radicalement différente de celle des GAN et VAE : plutôt que de générer en un seul forward pass, ils <em>dénoisent itérativement</em> du bruit gaussien pur vers une image structurée.
+      </p>
+
+      <div class="analogy">
+        <div class="emoji">🏺</div>
+        <div class="analogy-text">
+          <strong>Analogie — Le Restaurateur d'œuvres d'art</strong>
+          <p>Imagine une fresque ancienne que l'on recouvre progressivement de poussière jusqu'à ce qu'elle soit entièrement méconnaissable (processus forward). Un restaurateur expert apprend alors à <strong>enlever la poussière couche par couche</strong>, en déduisant à chaque étape ce qui se cache dessous (processus reverse). Il n'a pas besoin de voir la fresque originale : il apprend simplement à prédire quelle épaisseur de poussière a été ajoutée à chaque étape, et la soustrait.</p>
+        </div>
+      </div>
+
+      <!-- DIAGRAM DIFFUSION -->
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 760 180" width="100%" style="max-width:760px">
+          <!-- FORWARD PROCESS (add noise) -->
+          <!-- Steps: image → noisy1 → noisy2 → noise -->
+          <text x="380" y="18" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="DM Sans" letter-spacing="2">PROCESSUS AVANT (ajout de bruit)</text>
+
+          <!-- Box 1 : original -->
+          <rect x="15" y="30" width="75" height="75" rx="10" fill="rgba(106,255,212,.1)" stroke="var(--diff)" stroke-width="2"/>
+          <text x="52" y="62" text-anchor="middle" font-size="28">🐱</text>
+          <text x="52" y="82" text-anchor="middle" fill="var(--diff)" font-size="9" font-family="DM Sans" font-weight="600">x₀ Image</text>
+          <text x="52" y="95" text-anchor="middle" fill="#666" font-size="9" font-family="DM Sans">originale</text>
+
+          <!-- arrows + noise boxes -->
+          <line x1="90" y1="67" x2="120" y2="67" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="105" y="60" text-anchor="middle" fill="#555" font-size="8" font-family="DM Sans">+ε</text>
+          <rect x="120" y="30" width="75" height="75" rx="10" fill="rgba(106,255,212,.06)" stroke="rgba(106,255,212,.4)" stroke-width="1.5"/>
+          <text x="157" y="62" text-anchor="middle" font-size="28" opacity=".7">🐱</text>
+          <text x="157" y="82" text-anchor="middle" fill="#aaa" font-size="9" font-family="DM Sans">t=250</text>
+          <text x="157" y="95" text-anchor="middle" fill="#666" font-size="9" font-family="DM Sans">léger bruit</text>
+
+          <line x1="195" y1="67" x2="225" y2="67" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="210" y="60" text-anchor="middle" fill="#555" font-size="8" font-family="DM Sans">+ε</text>
+          <rect x="225" y="30" width="75" height="75" rx="10" fill="rgba(106,255,212,.04)" stroke="rgba(106,255,212,.3)" stroke-width="1.5"/>
+          <text x="262" y="62" text-anchor="middle" font-size="28" opacity=".45">🐱</text>
+          <text x="262" y="82" text-anchor="middle" fill="#aaa" font-size="9" font-family="DM Sans">t=500</text>
+          <text x="262" y="95" text-anchor="middle" fill="#666" font-size="9" font-family="DM Sans">bruit moyen</text>
+
+          <line x1="300" y1="67" x2="330" y2="67" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="315" y="60" text-anchor="middle" fill="#555" font-size="8" font-family="DM Sans">+ε</text>
+          <rect x="330" y="30" width="75" height="75" rx="10" fill="rgba(200,200,200,.04)" stroke="#333" stroke-width="1.5"/>
+          <text x="367" y="62" text-anchor="middle" font-size="28" opacity=".2">🐱</text>
+          <text x="367" y="82" text-anchor="middle" fill="#888" font-size="9" font-family="DM Sans">t=750</text>
+          <text x="367" y="95" text-anchor="middle" fill="#666" font-size="9" font-family="DM Sans">très bruité</text>
+
+          <line x1="405" y1="67" x2="435" y2="67" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <rect x="435" y="30" width="75" height="75" rx="10" fill="rgba(124,106,255,.06)" stroke="rgba(124,106,255,.3)" stroke-width="1.5"/>
+          <!-- noise pattern -->
+          <text x="472" y="72" text-anchor="middle" fill="#555" font-size="26">▒</text>
+          <text x="472" y="82" text-anchor="middle" fill="#888" font-size="9" font-family="DM Sans">t=1000</text>
+          <text x="472" y="95" text-anchor="middle" fill="#666" font-size="9" font-family="DM Sans">bruit pur ~N(0,1)</text>
+
+          <!-- REVERSE arrow (big) -->
+          <path d="M510 130 Q630 155 710 130" fill="none" stroke="rgba(106,255,212,.4)" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arr-green)">
+            <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="2s" repeatCount="indefinite"/>
+          </path>
+
+          <!-- OUTPUT new image -->
+          <rect x="665" y="30" width="80" height="75" rx="10" fill="rgba(124,106,255,.12)" stroke="var(--vae)" stroke-width="2"/>
+          <text x="705" y="62" text-anchor="middle" font-size="28">🐶</text>
+          <text x="705" y="82" text-anchor="middle" fill="var(--vae)" font-size="9" font-family="DM Sans" font-weight="600">Nouvelle image</text>
+          <text x="705" y="95" text-anchor="middle" fill="#666" font-size="9" font-family="DM Sans">générée</text>
+
+          <!-- U-Net label -->
+          <rect x="545" y="50" width="100" height="38" rx="8" fill="rgba(106,255,212,.06)" stroke="rgba(106,255,212,.25)" stroke-width="1"/>
+          <text x="595" y="67" text-anchor="middle" fill="var(--diff)" font-size="10" font-weight="700" font-family="Syne">U-Net εθ</text>
+          <text x="595" y="81" text-anchor="middle" fill="#666" font-size="9" font-family="DM Sans">prédit le bruit à retirer</text>
+
+          <text x="615" y="145" text-anchor="middle" fill="rgba(106,255,212,.6)" font-size="9" font-family="DM Sans">PROCESSUS INVERSE (débruitage)</text>
+        </svg>
+      </div>
+
+      <p>Un modèle de diffusion repose sur <span class="hl-diff">deux processus markoviens complémentaires</span> :</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num" style="background:rgba(255,106,155,.15);color:var(--gan)">→</div>
+          <p><strong>Processus forward q(x<sub>t</sub>|x<sub>t-1</sub>)</strong> — On corrompt progressivement l'image réelle x<sub>0</sub> en lui ajoutant du bruit gaussien à chaque pas t = 1, ..., T (typiquement T = 1000). C'est une chaîne de Markov <em>fixe, non apprise</em> : q(x<sub>t</sub>|x<sub>t-1</sub>) = 𝒩(√(1−β<sub>t</sub>) x<sub>t-1</sub>, β<sub>t</sub> I). Grâce à la propriété de clôture des gaussiennes, on peut exprimer directement x<sub>t</sub> = √ᾱ<sub>t</sub> x<sub>0</sub> + √(1−ᾱ<sub>t</sub>) ε, ε ∼ 𝒩(0, I), ce qui rend l'entraînement très efficace.</p>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(106,255,212,.15);color:var(--diff)">←</div>
+          <p><strong>Processus reverse p<sub>θ</sub>(x<sub>t-1</sub>|x<sub>t</sub>)</strong> — Un réseau U-Net ε<sub>θ</sub> apprend à prédire le bruit ε ajouté à chaque étape. La fonction de perte se simplifie remarquablement : ℒ = 𝔼<sub>t, x₀, ε</sub>[‖ε − ε<sub>θ</sub>(x<sub>t</sub>, t)‖²]. À l'inférence, on part de x<sub>T</sub> ∼ 𝒩(0, I) et on applique T étapes de débruitage pour obtenir une nouvelle image.</p>
+        </div>
+      </div>
+
+      <div class="analogy" style="border-left-color:var(--diff)">
+        <div class="emoji">🎬</div>
+        <div class="analogy-text">
+          <strong>Du DDPM à Stable Diffusion — Conditional Guidance</strong>
+          <p>DALL·E 2, Stable Diffusion et Midjourney reposent sur des extensions du DDPM. Stable Diffusion ajoute une <strong>Latent Diffusion</strong> (le processus opère dans l'espace latent d'un VAE, réduisant la complexité) et un mécanisme de <strong>Classifier-Free Guidance</strong> avec un encodeur de texte CLIP. Le modèle apprend ainsi à dénoiser conditionnellement à une description textuelle, permettant la génération text-to-image de haute qualité.</p>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros-cons-box pros-box">
+          <h4>✦ Avantages</h4>
+          <ul>
+            <li>Qualité d'image exceptionnelle — état de l'art (SOTA)</li>
+            <li>Entraînement stable avec une perte simple et bien définie</li>
+            <li>Très guidable : texte, image de référence, masque, profondeur…</li>
+            <li>Modélisation probabiliste rigoureuse (log-vraisemblance tractable)</li>
+          </ul>
+        </div>
+        <div class="pros-cons-box cons-box">
+          <h4>✦ Limites</h4>
+          <ul>
+            <li>Génération lente : T = 1000 forward passes (DDPM)</li>
+            <li>Coût computationnel élevé à l'entraînement et à l'inférence</li>
+            <li>Accélérateurs (DDIM, DPM-Solver) améliorent mais avec compromis qualité</li>
+            <li>Moins adapté que les GAN pour les applications temps-réel</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════ COMPARAISON ═══════════════════════════════ -->
+<section id="comparaison">
+  <div class="section-tag">05 — Comparaison Critique</div>
+  <h2>GAN vs VAE vs Diffusion</h2>
+  <p>Les trois architectures ne sont pas des concurrentes directes : elles répondent à des compromis fondamentaux différents entre qualité, stabilité, contrôle et coût computationnel. Le choix dépend du cas d'usage, des contraintes de déploiement et du niveau de supervision disponible.</p>
+
+  <!-- Visual comparison cards -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:2rem 0">
+    <div style="background:var(--surface);border:1px solid rgba(255,106,155,.3);border-radius:16px;padding:1.5rem;text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:.5rem">⚔️</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;color:var(--gan);margin-bottom:.5rem">GAN</div>
+      <div style="font-size:.85rem;color:var(--muted)">Jeu adversarial min-max</div>
+      <div style="margin-top:1rem;font-size:.8rem;color:#888">Rapide · Net · Instable</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid rgba(124,106,255,.3);border-radius:16px;padding:1.5rem;text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:.5rem">📐</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;color:var(--vae);margin-bottom:.5rem">VAE</div>
+      <div style="font-size:.85rem;color:var(--muted)">Inférence variationnelle</div>
+      <div style="margin-top:1rem;font-size:.8rem;color:#888">Stable · Structuré · Flou</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid rgba(106,255,212,.3);border-radius:16px;padding:1.5rem;text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:.5rem">🎯</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;color:var(--diff);margin-bottom:.5rem">Diffusion</div>
+      <div style="font-size:.85rem;color:var(--muted)">Débruitage markovien itératif</div>
+      <div style="margin-top:1rem;font-size:.8rem;color:#888">Lent · Exceptionnel · Guidable</div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
     <table>
       <thead>
         <tr>
-          <th>Modèle</th>
-          <th>Concept Clé</th>
-          <th>Point Fort</th>
-          <th>Point Faible</th>
+          <th>Critère</th>
+          <th><span class="tag gan">GAN</span></th>
+          <th><span class="tag vae">VAE</span></th>
+          <th><span class="tag diff">Diffusion</span></th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>GAN</strong></td>
-          <td>Compétition</td>
-          <td>Réalisme visuel</td>
-          <td>Entraînement difficile</td>
+          <td><strong>Idée principale</strong></td>
+          <td>Deux réseaux adversariaux</td>
+          <td>Encoder → espace latent gaussien (μ, σ) → Decoder + régularisation KL</td>
+          <td>Chaîne de Markov forward (bruitage) + U-Net reverse (débruitage itératif)</td>
         </tr>
         <tr>
-          <td><strong>VAE</strong></td>
-          <td>Compression</td>
-          <td>Stabilité théorique</td>
-          <td>Précision des détails</td>
+          <td><strong>Qualité d'image</strong></td>
+          <td>Très élevée — détails fins, netteté (StyleGAN3 : FID &lt; 3 sur FFHQ)</td>
+          <td>Modérée — légèrement floue due au compromis reconstruction/régularisation</td>
+          <td>SOTA — FID &lt; 2 sur ImageNet 256×256 (ADM, DiT)</td>
         </tr>
         <tr>
-          <td><strong>Diffusion</strong></td>
-          <td>Débruitage</td>
-          <td>Diversité & Qualité</td>
-          <td>Vitesse de génération</td>
+          <td><strong>Stabilité entraînement</strong></td>
+          <td>Fragile — mode collapse, gradient vanishing, équilibre G/D difficile</td>
+          <td>Stable — ELBO est une borne bien définie, pas d'antagonisme</td>
+          <td>Très stable — MSE simple, convergence prévisible</td>
+        </tr>
+        <tr>
+          <td><strong>Vitesse génération</strong></td>
+          <td>Très rapide — 1 forward pass (quelques ms)</td>
+          <td>Rapide — 1 forward pass décodeur</td>
+          <td>Lent — T = 50–1000 étapes (DDIM : ~50 pas, DPM-Solver : ~20 pas)</td>
+        </tr>
+        <tr>
+          <td><strong>Contrôle conditionnel</strong></td>
+          <td>Conditionnel (cGAN) mais guidage texte difficile ; pas d'encodeur natif</td>
+          <td>Espace latent interpolable ; contrôle sémantique via z</td>
+          <td>Excellent — classifier-free guidance, ControlNet, inpainting, text-to-image</td>
+        </tr>
+        <tr>
+          <td><strong>Cas d'usage typique</strong></td>
+          <td>Synthèse haute résolution, style transfer, data augmentation rapide</td>
+          <td>Compression, anomaly detection, interpolation sémantique, disentanglement</td>
+          <td>Text-to-image, édition, super-résolution, génération 3D, vidéo</td>
+        </tr>
+        <tr>
+          <td><strong>Modèles de référence</strong></td>
+          <td>StyleGAN3, BigGAN, CycleGAN, Pix2Pix, WGAN-GP</td>
+          <td>β-VAE, NVAE, VQ-VAE (base de DALL·E 1)</td>
+          <td>DDPM, DDIM, Stable Diffusion (LDM), DALL·E 2, DiT</td>
         </tr>
       </tbody>
     </table>
-  </section>
+  </div>
 
-  <section id="conclusion">
-    <h2>04. Conclusion et Perspectives</h2>
-    <p>
-      L'intégration de la GenAI dans la Computer Vision ne se limite plus à la création artistique. Elle devient un outil fondamental pour la <strong>robuste-ingénierie</strong>, permettant par exemple de générer des attaques adversariales pour tester la résilience des modèles (comme le Swin Transformer) ou de créer des données d'entraînement synthétiques pour des domaines où les données réelles sont rares ou sensibles.
-    </p>
-  </section>
+  <!-- Timeline -->
+  <div style="margin-top:3rem">
+    <div class="section-tag">Chronologie des avancées clés</div>
+    <div style="position:relative;padding:2rem 0;margin-top:1.5rem">
+      <div style="position:absolute;left:80px;top:0;bottom:0;width:2px;background:var(--border)"></div>
+      
+      <div style="display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem;position:relative">
+        <div style="width:80px;text-align:right;flex-shrink:0;color:var(--muted);font-size:.85rem;padding-top:.15rem">2013</div>
+        <div style="width:14px;height:14px;background:var(--vae);border-radius:50%;flex-shrink:0;margin-top:.2rem;box-shadow:0 0 12px var(--vae)"></div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--vae)">VAE — Kingma &amp; Welling (ICLR 2014)</div>
+          <div style="color:var(--muted);font-size:.85rem">Premier cadre génératif probabiliste profond — reparameterization trick, ELBO, inférence variationnelle amortie</div>
+        </div>
+      </div>
 
-  <footer class="footer">
-    <p>© 2026 — Travail Académique | Cours 7: Computer Vision & Generative AI</p>
-    <p style="font-size: 0.8rem; margin-top: 0.5rem;">Références : Document de cours S8 (p.40-42) | Analyse inspirée de la méthodologie "Swin Transformer FAS Analysis".</p>
-  </footer>
-</div>
+      <div style="display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem;position:relative">
+        <div style="width:80px;text-align:right;flex-shrink:0;color:var(--muted);font-size:.85rem;padding-top:.15rem">2014</div>
+        <div style="width:14px;height:14px;background:var(--gan);border-radius:50%;flex-shrink:0;margin-top:.2rem;box-shadow:0 0 12px var(--gan)"></div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gan)">GAN — Ian Goodfellow et al. (NeurIPS 2014)</div>
+          <div style="color:var(--muted);font-size:.85rem">Jeu adversarial min-max, deux réseaux antagonistes — rupture paradigmatique, explosion de la synthèse d'images réalistes</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem;position:relative">
+        <div style="width:80px;text-align:right;flex-shrink:0;color:var(--muted);font-size:.85rem;padding-top:.15rem">2017–19</div>
+        <div style="width:14px;height:14px;background:var(--gan);border-radius:50%;flex-shrink:0;margin-top:.2rem;box-shadow:0 0 12px var(--gan)"></div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gan)">CycleGAN, StyleGAN, BigGAN</div>
+          <div style="color:var(--muted);font-size:.85rem">Maturité des GAN : translation non supervisée, génération haute résolution (1024×1024), contrôle de style — FID devient métrique standard</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem;position:relative">
+        <div style="width:80px;text-align:right;flex-shrink:0;color:var(--muted);font-size:.85rem;padding-top:.15rem">2020</div>
+        <div style="width:14px;height:14px;background:var(--diff);border-radius:50%;flex-shrink:0;margin-top:.2rem;box-shadow:0 0 12px var(--diff)"></div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--diff)">DDPM — Ho et al. (NeurIPS 2020)</div>
+          <div style="color:var(--muted);font-size:.85rem">Formalisation des Denoising Diffusion Probabilistic Models — U-Net pour la prédiction du bruit, connexion à la score matching et aux process stochastiques</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem;position:relative">
+        <div style="width:80px;text-align:right;flex-shrink:0;color:var(--muted);font-size:.85rem;padding-top:.15rem">2021–22</div>
+        <div style="width:14px;height:14px;background:var(--diff);border-radius:50%;flex-shrink:0;margin-top:.2rem;box-shadow:0 0 12px var(--diff)"></div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--diff)">DDIM, LDM, DALL·E 2, Imagen</div>
+          <div style="color:var(--muted);font-size:.85rem">Accélération (DDIM : 50 étapes), Latent Diffusion (Stable Diffusion), Classifier-Free Guidance, CLIP — convergence text-to-image</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:flex-start;gap:1.5rem;position:relative">
+        <div style="width:80px;text-align:right;flex-shrink:0;color:var(--muted);font-size:.85rem;padding-top:.15rem">2023+</div>
+        <div style="width:14px;height:14px;background:var(--accent4);border-radius:50%;flex-shrink:0;margin-top:.2rem;box-shadow:0 0 12px var(--accent4)"></div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent4)">DiT, ControlNet, Sora, FLUX</div>
+          <div style="color:var(--muted);font-size:.85rem">Diffusion Transformers (DiT), contrôle fin de la génération (ControlNet), génération vidéo (Sora/OpenAI), nouvelles architectures (FLUX/Black Forest Labs)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONCLUSION -->
+<section>
+  <div class="section-tag">06 — Conclusion &amp; Perspectives</div>
+  <h2>Synthèse et regards vers l'avenir</h2>
+  <p>
+    Les trois familles de modèles génératifs que nous avons étudiées répondent chacune à une philosophie distincte de la modélisation des données visuelles. Les <span class="hl-gan">GAN</span> ont ouvert la voie à la génération d'images haute qualité en exploitant la compétition adversariale, au prix d'une instabilité d'entraînement inhérente à leur jeu min-max. Les <span class="hl-vae">VAE</span> ont apporté un cadre probabiliste rigoureux avec un espace latent structuré, idéal pour la compréhension et l'édition, mais au prix d'une qualité visuelle moindre. Les <span class="hl-diff">Diffusion Models</span> ont finalement redéfini l'état de l'art en combinant la rigueur des processus markoviens avec la puissance des architectures profondes (U-Net, Transformers).
+  </p>
+
+  <div class="analogy" style="border-left-color:var(--accent4)">
+    <div class="emoji">🔭</div>
+    <div class="analogy-text">
+      <strong>Perspectives de recherche active</strong>
+      <p>Les frontières actuelles incluent : la <strong>génération vidéo cohérente</strong> (Sora, VideoLDM), la <strong>génération 3D</strong> (NeRF + Diffusion), les <strong>modèles de diffusion sur graphes</strong> pour les molécules, les <strong>Diffusion Transformers</strong> (DiT) qui remplacent le U-Net par une architecture Transformer et surpassent les CNN sur ImageNet, et enfin la question des <strong>deepfakes et de la détection</strong> — domaine directement lié aux travaux sur le Face Anti-Spoofing et la robustesse adversariale.</p>
+    </div>
+  </div>
+
+  <div class="analogy" style="border-left-color:var(--gan)">
+    <div class="emoji">⚠️</div>
+    <div class="analogy-text">
+      <strong>Enjeux éthiques et de sécurité</strong>
+      <p>La puissance des modèles génératifs soulève des questions fondamentales : production de <strong>deepfakes</strong> à des fins de désinformation, violation des droits d'auteur (entraînement sur des données protégées), biais dans les représentations générées. C'est précisément pour contrer ces usages malveillants que des systèmes de <strong>Face Anti-Spoofing</strong> robustes aux attaques adversariales (FGSM, PGD) deviennent critiques dans les infrastructures biométriques.</p>
+    </div>
+  </div>
+
+  <div class="analogy" style="border-left-color:var(--vae)">
+    <div class="emoji">📚</div>
+    <div class="analogy-text">
+      <strong>Références fondamentales</strong>
+      <p>
+        [1] Goodfellow et al., <em>Generative Adversarial Nets</em>, NeurIPS 2014<br>
+        [2] Kingma &amp; Welling, <em>Auto-Encoding Variational Bayes</em>, ICLR 2014<br>
+        [3] Ho et al., <em>Denoising Diffusion Probabilistic Models</em>, NeurIPS 2020<br>
+        [4] Song &amp; Ermon, <em>Score-Based Generative Modeling</em>, NeurIPS 2020<br>
+        [5] Rombach et al., <em>High-Resolution Image Synthesis with Latent Diffusion Models</em>, CVPR 2022<br>
+        [6] Peebles &amp; Xie, <em>Scalable Diffusion Models with Transformers (DiT)</em>, ICCV 2023
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>Generative AI × Computer Vision</strong> — Blog ELI5 · S8<br>
+  <span style="margin-top:.5rem;display:block">ENSIASD · Filière Science des Données, Big Data et IA · Cours Computer Vision &amp; Generative AI · 2025–2026</span>
+  <span style="margin-top:.25rem;display:block;color:#555;font-size:.75rem">Encadrante : Pr. Basma Saad</span>
+</footer>
 
 </body>
 </html>
