@@ -112,91 +112,136 @@ th{
 
 <div class="hero">
 <h1>Generative AI en Computer Vision</h1>
-<p>Une explication simple, visuelle et pédagogique des modèles GAN, VAE et Diffusion (ELI5)</p>
+<p>Une explication simple (ELI5) mais rigoureuse des modèles GAN, VAE et Diffusion</p>
 </div>
 
-<!-- 1. QUOI -->
+<!-- 1 -->
 <section>
 <h2>1. C’est quoi le Generative AI en Computer Vision ?</h2>
 
 <div class="card">
+
 <p>
-Le <strong>Generative AI</strong> en vision par ordinateur est une branche de l’intelligence artificielle qui permet aux machines de <strong>créer de nouvelles images</strong> à partir de ce qu’elles ont appris.
+Le <strong>Generative AI</strong> en vision par ordinateur est une branche de l’intelligence artificielle qui vise à <strong>modéliser la distribution des données visuelles</strong> afin de générer de nouvelles images réalistes.
 </p>
 
-<div class="eli5">
-<strong>ELI5 :</strong><br>
-C’est comme un enfant qui regarde beaucoup de dessins… puis devient capable de dessiner lui-même un nouveau dessin.
-</div>
-
 <p>
-Contrairement aux modèles classiques (classification), ici l’IA ne se contente pas de reconnaître une image… elle apprend à <strong>reproduire le monde visuel</strong>.
+Contrairement aux modèles discriminatifs (classification, détection), les modèles génératifs apprennent la structure interne des données : formes, textures, relations spatiales, etc.
 </p>
 
 <div class="diagram">
-Entrée : bruit aléatoire → IA → Image générée
+Apprentissage : Images réelles → Modèle → Distribution P(x)
+Génération : bruit z → Modèle → Image synthétique
 </div>
+
+<p>
+Mathématiquement, le but est d’approximer une distribution inconnue P(x) (images réelles) par une distribution générée Pθ(x).
+</p>
+
+<div class="eli5">
+Imagine que tu regardes des milliers de chats 🐱.  
+Au bout d’un moment, ton cerveau comprend “ce qu’est un chat” et peut en dessiner un nouveau sans copier.
+</div>
+
+<h3>Exemple concret</h3>
+<ul>
+<li>Créer un visage humain qui n’existe pas</li>
+<li>Transformer un croquis en image réaliste</li>
+<li>Compléter une image partiellement détruite</li>
+</ul>
 
 </div>
 </section>
 
-<!-- 2. POURQUOI -->
+<!-- 2 -->
 <section>
-<h2>2. Pourquoi utiliser Generative AI ?</h2>
+<h2>2. Pourquoi utiliser le Generative AI ?</h2>
 
 <div class="grid">
 
 <div class="card">
-<h3>Création de données</h3>
-<p>Générer des images quand on n’a pas assez de données.</p>
+<h3>1. Data Augmentation</h3>
+<p>
+Générer de nouvelles données pour entraîner des modèles lorsque les données sont rares ou coûteuses.
+</p>
 
 <div class="eli5">
-Comme inventer des exemples pour mieux apprendre.
+Comme inventer des exercices supplémentaires pour mieux réviser.
 </div>
 </div>
 
 <div class="card">
-<h3>Deepfakes & cinéma</h3>
-<p>Créer des visages réalistes, effets spéciaux, avatars.</p>
+<h3>2. Simulation (Médecine, autonome)</h3>
+<p>
+Simuler des cas rares (tumeurs, accidents) pour entraîner des systèmes robustes.
+</p>
 </div>
 
 <div class="card">
-<h3>Médecine</h3>
-<p>Simuler des cas rares pour entraîner les modèles.</p>
+<h3>3. Création artistique</h3>
+<p>
+Utilisé dans le design, le cinéma et les jeux vidéo.
+</p>
+
+<div class="eli5">
+Une IA peut devenir un artiste 🎨
+</div>
 </div>
 
 <div class="card">
-<h3>Art & design</h3>
-<p>Créer des œuvres automatiquement.</p>
+<h3>4. Image-to-Image</h3>
+<p>
+Transformer une image en une autre (jour → nuit, sketch → photo).
+</p>
 </div>
 
 </div>
+
+<div class="card">
+<h3>Pourquoi c’est révolutionnaire ?</h3>
+<ul>
+<li>Permet de créer sans données réelles</li>
+<li>Réduit le coût de collecte de données</li>
+<li>Ouvre la voie à des systèmes créatifs</li>
+</ul>
+</div>
+
 </section>
 
-<!-- 3. ARCHITECTURES -->
+<!-- 3 -->
 <section>
-<h2>3. Architectures principales (ELI5)</h2>
+<h2>3. Architectures principales</h2>
 
 <!-- GAN -->
 <div class="card">
-<h3>GAN (Generative Adversarial Network)</h3>
+<h3>GAN (Generative Adversarial Networks)</h3>
 
 <p>
-Deux réseaux se battent :
+Introduits par Goodfellow (2014), les GAN reposent sur un <strong>jeu à somme nulle</strong> entre deux réseaux :
 </p>
 
 <ul>
-<li>Générateur → crée des images</li>
-<li>Discriminateur → juge si c’est vrai ou faux</li>
+<li><strong>Générateur (G)</strong> : produit des images</li>
+<li><strong>Discriminateur (D)</strong> : distingue vrai/faux</li>
 </ul>
 
 <div class="diagram">
-Générateur → image fake → Discriminateur → vrai/faux
+z (bruit) → G → image fake → D → probabilité réel/fake
 </div>
 
 <div class="eli5">
-Un faussaire vs un policier.  
-Le faussaire devient de plus en plus fort.
+Un faussaire fabrique des faux billets 💸  
+Un policier essaye de les détecter  
+→ Les deux deviennent meilleurs
+</div>
+
+<h4>Explication plus académique</h4>
+<p>
+Le modèle optimise une fonction min-max :
+</p>
+
+<div class="diagram">
+min_G max_D  E[log D(x)] + E[log(1 - D(G(z)))]
 </div>
 
 <h4>Avantages</h4>
@@ -207,8 +252,8 @@ Le faussaire devient de plus en plus fort.
 
 <h4>Limites</h4>
 <ul>
-<li>Difficile à entraîner</li>
-<li>Peut générer toujours la même chose (mode collapse)</li>
+<li>Instabilité d’entraînement</li>
+<li>Mode collapse (manque de diversité)</li>
 </ul>
 
 </div>
@@ -218,96 +263,145 @@ Le faussaire devient de plus en plus fort.
 <h3>VAE (Variational AutoEncoder)</h3>
 
 <p>
-Encode → compresse → Decode → reconstruit
+Les VAE apprennent une représentation probabiliste appelée <strong>espace latent</strong>.
 </p>
 
 <div class="diagram">
-Image → Encodeur → espace latent → Décodeur → Image
+Image → Encodeur → (μ, σ) → z → Décodeur → Image
 </div>
 
 <div class="eli5">
-C’est comme résumer un livre puis le réécrire.
+Tu compresses une photo → puis tu la reconstruis  
+Comme zip → unzip
+</div>
+
+<h4>Explication académique</h4>
+<p>
+Le VAE maximise une borne ELBO :
+</p>
+
+<div class="diagram">
+ELBO = Reconstruction Loss + KL Divergence
 </div>
 
 <h4>Avantages</h4>
 <ul>
 <li>Stable</li>
-<li>Compréhension mathématique claire</li>
+<li>Espace latent interprétable</li>
 </ul>
 
 <h4>Limites</h4>
 <ul>
-<li>Images floues</li>
+<li>Images souvent floues</li>
 </ul>
 
 </div>
 
-<!-- DIFFUSION -->
+<!-- Diffusion -->
 <div class="card">
 <h3>Diffusion Models</h3>
 
 <p>
-On ajoute du bruit puis on apprend à l’enlever.
+Les modèles de diffusion apprennent à <strong>inverser un processus de bruit</strong>.
 </p>
 
 <div class="diagram">
-Image → bruit → bruit total → IA → image reconstruite
+Image → bruit progressif → bruit total → modèle → reconstruction
 </div>
 
 <div class="eli5">
-Comme salir une photo puis apprendre à la nettoyer.
+Tu prends une photo → tu la salis progressivement  
+Puis tu apprends à la nettoyer étape par étape
 </div>
+
+<h4>Explication académique</h4>
+<p>
+Processus en deux phases :
+</p>
+
+<ul>
+<li>Forward : ajouter du bruit</li>
+<li>Reverse : enlever le bruit</li>
+</ul>
 
 <h4>Avantages</h4>
 <ul>
-<li>Très haute qualité</li>
-<li>Résultats modernes (DALL-E, etc.)</li>
+<li>Qualité SOTA</li>
+<li>Très stable</li>
 </ul>
 
 <h4>Limites</h4>
 <ul>
-<li>Lent</li>
-<li>Coûteux en calcul</li>
+<li>Lent (plusieurs étapes)</li>
+<li>Coût computationnel élevé</li>
 </ul>
 
 </div>
 
 </section>
 
-<!-- 4. COMPARAISON -->
+<!-- 4 -->
 <section>
-<h2>4. Comparaison simple</h2>
+<h2>4. Comparaison approfondie</h2>
 
 <table>
 <tr>
 <th>Modèle</th>
 <th>Idée</th>
+<th>Analogie</th>
 <th>Avantages</th>
 <th>Limites</th>
 </tr>
 
 <tr>
 <td>GAN</td>
-<td>Compétition</td>
-<td>Images réalistes</td>
-<td>Instable</td>
+<td>Jeu adversarial</td>
+<td>Faussaire vs policier</td>
+<td>Images réalistes, rapide</td>
+<td>Instable, manque diversité</td>
 </tr>
 
 <tr>
 <td>VAE</td>
-<td>Compression</td>
-<td>Stable</td>
+<td>Compression probabiliste</td>
+<td>Résumé puis reconstruction</td>
+<td>Stable, interprétable</td>
 <td>Flou</td>
 </tr>
 
 <tr>
 <td>Diffusion</td>
 <td>Bruit → nettoyage</td>
+<td>Nettoyer une image sale</td>
 <td>Qualité SOTA</td>
-<td>Lent</td>
+<td>Lent, coûteux</td>
 </tr>
 
 </table>
+
+<div class="card">
+<h3>Analyse critique</h3>
+
+<p>
+Chaque modèle correspond à une philosophie différente :
+</p>
+
+<ul>
+<li><strong>GAN</strong> : compétition</li>
+<li><strong>VAE</strong> : probabilité</li>
+<li><strong>Diffusion</strong> : processus physique (bruit)</li>
+</ul>
+
+<div class="eli5">
+C’est comme 3 façons d’apprendre à dessiner :
+<ul>
+<li>GAN → compétition</li>
+<li>VAE → comprendre et reconstruire</li>
+<li>Diffusion → corriger progressivement</li>
+</ul>
+</div>
+
+</div>
 
 </section>
 
@@ -316,19 +410,18 @@ Comme salir une photo puis apprendre à la nettoyer.
 <h2>Conclusion</h2>
 
 <div class="card">
+
 <p>
-Le Generative AI est une révolution en Computer Vision.  
-Chaque modèle a ses forces :
+Le Generative AI représente aujourd’hui une des avancées majeures en intelligence artificielle.
 </p>
 
-<ul>
-<li>GAN → rapide et réaliste</li>
-<li>VAE → stable et structuré</li>
-<li>Diffusion → meilleure qualité actuelle</li>
-</ul>
+<p>
+Les modèles de diffusion dominent actuellement, mais les GAN restent utiles pour leur rapidité, et les VAE pour leur structure mathématique.
+</p>
 
 <div class="eli5">
-Il n’y a pas un meilleur modèle… seulement le bon outil selon le problème.
+Il n’y a pas un modèle parfait.  
+Chaque outil est adapté à un problème différent.
 </div>
 
 </div>
